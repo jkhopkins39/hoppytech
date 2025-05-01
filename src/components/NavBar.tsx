@@ -1,30 +1,27 @@
-import React from "react";
+import * as React from "react";
+import Button from "./Button";
+import Logo from "./Logo";
 
 const NavBar = () => {
   return (
     <nav className="bg-blue-500 p-4">
-      <ul className="flex space-x-6">
-        <li>
-          <a href="#home" className="text-white hover:text-gray-200">
-            Home
-          </a>
-        </li>
-        <li>
-          <a href="#about" className="text-white hover:text-gray-200">
-            About
-          </a>
-        </li>
-        <li>
-          <a href="#services" className="text-white hover:text-gray-200">
-            Services
-          </a>
-        </li>
-        <li>
-          <a href="#contact" className="text-white hover:text-gray-200">
-            Contact
-          </a>
-        </li>
-      </ul>
+      <div className="flex items-center justify-between max-w-8xl mx-auto">
+        <Logo />
+        <ul className="flex space-x-96">
+          <li>
+            <Button>About</Button>
+          </li>
+          <li>
+            <Button>Portfolio</Button>
+          </li>
+          <li>
+            <Button>Creative</Button>
+          </li>
+          <li>
+            <Button>Contact</Button>
+          </li>
+        </ul>
+      </div>
     </nav>
   );
 };
