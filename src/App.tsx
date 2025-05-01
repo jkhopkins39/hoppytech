@@ -5,34 +5,40 @@ function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="bg-gray-100">
-      {" "}
-      <NavBar></NavBar>
-      <div className="min-h-screen max-w-screen-md bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
+    <div className="min-h-screen bg-gray-100">
+      {/* Fixed Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <NavBar />
+      </div>
+
+      {/* Main Content - starts below navbar */}
+      <div className="pt-16">
         {" "}
-        <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-          <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-            {" "}
-            //
-            <div className="max-w-md mx-auto">
-              <div className="divide-y divide-gray-200">
-                <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                  <h1 className="text-3xl font-bold text-center mb-8 text-blue-600">
-                    Vite + React + Tailwind
-                  </h1>
-                  <div className="text-center">
-                    <button
-                      onClick={() => setCount((count) => count + 1)}
-                      className="px-4 py-2 font-semibold text-sm bg-blue-500 text-white rounded-full shadow-sm hover:bg-blue-600 transition-colors duration-200"
-                    >
-                      Count is {count}
-                    </button>
-                  </div>
-                </div>
-              </div>
+        {/* This padding-top matches navbar height */}
+        {/* Hero Section */}
+        <section className="min-h-screen flex items-center justify-end">
+          <div className="flex justify-end w-full">
+            <h1 className="text-black font-bold drop-shadow-sm h-full w-full justify-center p-24 bg-[#ffbd62] bg-gradient-to-r from-[#ff9e00] to-[#ffbd62] flex-1 self-center">
+              Hello, my name is Jeremy! I am an aspiring AI developer who loves
+              to learn and build new things. Here you will find some information
+              about me and what I can do.{" "}
+              <span className="text-[#5e8fde] drop-shadow-sm animate-pulse">
+                So what's next?
+              </span>
+            </h1>
+            <div className="relative">
+              <img
+                src="/Introduction.jpg"
+                alt="A picture of me"
+                className="w-[80vw] h-[100vh] object-cover"
+              />
             </div>
           </div>
-        </div>
+        </section>
+        {/* Next Section */}
+        <section className="min-h-screen">
+          {/* Content for next section will go here */}
+        </section>
       </div>
     </div>
   );

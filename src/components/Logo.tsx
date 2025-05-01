@@ -5,14 +5,17 @@ The logo component will contain the following:
 */
 
 import * as React from "react";
+import { Link } from "react-router-dom";
 
 const Logo = () => {
   return (
-    <div className="w-10 h-10 bg-gray-200 rounded-md">
-      <button>
-        <img src="assets/WebsiteLogo.png" alt="Logo" />
-      </button>
-    </div>
+    <Link to="/" className="block w-[4vw] h-[4vw] min-w-[40px] min-h-[40px]">
+      <img
+        src="/WebsiteLogo.png"
+        alt="Logo"
+        className="w-full h-full object-cover rounded-md"
+      />
+    </Link>
   );
 };
 

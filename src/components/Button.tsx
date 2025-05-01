@@ -7,8 +7,11 @@ import * as React from "react";
 
 const Button = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="bg-orange-500 text-white rounded-md p-1">
-      <button className="bg-transparent"> {children} </button>
+    <div className="bg-[#ffbd62] text-white rounded-md p-1 transition-colors duration-200">
+      <button className="bg-transparent focus:outline-none outline-none">
+        {" "}
+        {children}{" "}
+      </button>
     </div>
   );
 };
