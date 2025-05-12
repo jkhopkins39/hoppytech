@@ -9,8 +9,14 @@ import { Link } from "react-router-dom";
 
 const Logo = () => {
   return (
-    <Link to="/" className="block">
-      <img src="/WebsiteLogo.png" alt="Logo" className="size-12" />
+    <Link to="/" className="block group">
+      <div className="relative">
+        <img
+          src="/WebsiteLogo.png"
+          alt="Logo"
+          className="size-12 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:brightness-100"
+        />
+      </div>
     </Link>
   );
 };
