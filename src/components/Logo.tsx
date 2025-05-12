@@ -9,12 +9,8 @@ import { Link } from "react-router-dom";
 
 const Logo = () => {
   return (
-    <Link to="/" className="block w-[4vw] h-[4vw] min-w-[40px] min-h-[40px]">
-      <img
-        src="/WebsiteLogo.png"
-        alt="Logo"
-        className="w-full h-full object-cover rounded-md"
-      />
+    <Link to="/" className="block">
+      <img src="/WebsiteLogo.png" alt="Logo" className="size-12" />
     </Link>
   );
 };
