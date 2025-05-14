@@ -27,7 +27,7 @@ const NavBar = () => {
             <li>
               <div className="rounded-full p-4 scale-100">
                 <button
-                  onClick={() => handleClick("/projects")}
+                  onClick={() => handleClick("/portfolio")}
                   className="w-full px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-white rounded-full hover:bg-orange-400 transition-colors duration-200"
                 >
                   Portfolio
@@ -51,6 +51,16 @@ const NavBar = () => {
                   className="w-full px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-white rounded-full hover:bg-orange-400 transition-colors duration-200"
                 >
                   Contact
+                </button>
+              </div>
+            </li>
+            <li>
+              <div className="rounded-full p-4 scale-100">
+                <button
+                  onClick={() => handleClick("/blog")}
+                  className="w-full px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-white rounded-full hover:bg-orange-400 transition-colors duration-200"
+                >
+                  Blog
                 </button>
               </div>
             </li>

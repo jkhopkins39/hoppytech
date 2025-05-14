@@ -11,6 +11,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
+  background-color: #000000;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -34,6 +35,8 @@ body {
   min-height: 100vh;
   width: 100%;
   height: 100%;
+  overflow-x: hidden;
+  background-color: #000000;
 }
 
 h1 {
@@ -65,7 +68,7 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #000000;
   }
   a:hover {
     color: #747bff;
@@ -78,4 +81,6 @@ button:focus-visible {
 #root {
   width: 100%;
   height: 100%;
+  background-color: #000000;
 }
+
