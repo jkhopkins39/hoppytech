@@ -1,6 +1,9 @@
 # Jeremy's Website
------------------------------------------
+
+---
+
 ## Aim Functionality:
+
 - See "Home Page": nav bar, greeting, name, picture of me, "Get in touch" button, "View work" button, three fun facts/attributes, links to socials at bottom
 - See "Contact" info: email, all social media (Instagram, Facebook, Substack, Github)
 - See "Projects": Github repositories, ability to link and view numerous links side by side for addition of google docs and slides, external work
