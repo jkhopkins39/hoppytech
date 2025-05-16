@@ -9,7 +9,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="h-16 bg-blue-500 p-2 bg-gradient-to-b from-[#5e8fde] to-[#4b73b3] scale-100 min-h-16">
+    <nav className="h-16 p-2 bg-black scale-100 min-h-16 bg-gradient-to-l from-red-500 via-indigo-700 to-blue-500">
       <div className="flex items-center h-full max-w-8xl mx-auto scale-100">
         <div className="justify-start p-4 scale-auto">
           <Logo />
@@ -19,7 +19,7 @@ const NavBar = () => {
             <div className="rounded-full p-4 scale-100">
               <button
                 onClick={() => handleClick("/about")}
-                className="w-full px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-white rounded-full hover:bg-orange-400 transition-colors duration-200"
+                className="bg-white w-full border-1 border-black px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-black rounded-full hover:bg-blue-200 transition-colors duration-200"
               >
                 About
               </button>
@@ -28,7 +28,7 @@ const NavBar = () => {
               <div className="rounded-full p-4 scale-100">
                 <button
                   onClick={() => handleClick("/portfolio")}
-                  className="w-full px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-white rounded-full hover:bg-orange-400 transition-colors duration-200"
+                  className="bg-white w-full border-1 border-black px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-black rounded-full hover:bg-blue-200 transition-colors duration-200"
                 >
                   Portfolio
                 </button>
@@ -38,7 +38,7 @@ const NavBar = () => {
               <div className="rounded-full p-4 scale-100">
                 <button
                   onClick={() => handleClick("/creative")}
-                  className="w-full px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-white rounded-full hover:bg-orange-400 transition-colors duration-200"
+                  className="bg-white w-full border-1 border-black px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-black rounded-full hover:bg-blue-200 transition-colors duration-200"
                 >
                   Creative
                 </button>
@@ -48,7 +48,7 @@ const NavBar = () => {
               <div className="rounded-full p-4 scale-100">
                 <button
                   onClick={() => handleClick("/contact")}
-                  className="w-full px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-white rounded-full hover:bg-orange-400 transition-colors duration-200"
+                  className="bg-white w-full border-1 border-black px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-black rounded-full hover:bg-blue-200 transition-colors duration-200"
                 >
                   Contact
                 </button>
@@ -58,7 +58,7 @@ const NavBar = () => {
               <div className="rounded-full p-4 scale-100">
                 <button
                   onClick={() => handleClick("/blog")}
-                  className="w-full px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-white rounded-full hover:bg-orange-400 transition-colors duration-200"
+                  className="bg-white w-full border-1 border-black px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm text-black rounded-full hover:bg-blue-200 transition-colors duration-200"
                 >
                   Blog
                 </button>

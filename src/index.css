@@ -84,3 +84,12 @@ button:focus-visible {
   background-color: #000000;
 }
 
+/* Dropdown styles */
+.dropdown-container.expanded .dropdown-content {
+  height: 8rem;
+}
+
+.dropdown-container.expanded .fa-chevron-down {
+  transform: rotate(180deg);
+}
+

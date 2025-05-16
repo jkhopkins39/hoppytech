@@ -14,7 +14,7 @@ const Logo = () => {
         <img
           src="/WebsiteLogo.png"
           alt="Logo"
-          className="size-12 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:brightness-100"
+          className="border-1 border-white size-12 transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:brightness-100 drop-shadow-md"
         />
       </div>
     </Link>
