@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const ResumeSection: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showShareOptions, setShowShareOptions] = useState(false);
 
   const shareOptions = [
     { name: 'LinkedIn', icon: 'fab fa-linkedin', action: () => window.open('https://linkedin.com/share', '_blank') },
