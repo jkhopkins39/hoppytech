@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import Footer from '../components/Footer';
 
 const Contact: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -37,22 +38,22 @@ const Contact: React.FC = () => {
       name: 'Instagram',
       icon: 'fab fa-instagram',
       logo: '/instagram-logo.png',
-      handle: '@jeremyhopkins',
-      url: 'https://instagram.com/jeremyhopkins'
+      handle: '@jeremykhopkins',
+      url: 'https://instagram.com/jeremykhopkins'
     },
     {
       name: 'Facebook',
       icon: 'fab fa-facebook',
       logo: '/facebook-logo.png',
       handle: 'Jeremy Hopkins',
-      url: 'https://facebook.com/jeremyhopkins'
+      url: 'https://facebook.com/jeremy.hopkins.94695'
     },
     {
       name: 'LinkedIn',
       icon: 'fab fa-linkedin',
       logo: '/linkedin-logo.png',
-      handle: 'jeremy-hopkins',
-      url: 'https://linkedin.com/in/jeremy-hopkins'
+      handle: 'jeremy-hopkins-160001275',
+      url: 'https://www.linkedin.com/in/jeremy-hopkins-160001275'
     },
     {
       name: 'GitHub',
@@ -65,12 +66,12 @@ const Contact: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-10">
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-6xl font-bold mb-12 text-center bg-gradient-to-r from-[#ffbd62] to-[#ff8f62] bg-clip-text text-transparent"
+          className="text-5xl font-bold mb-10 text-center bg-gradient-to-r from-[#ffbd62] to-[#ff8f62] bg-clip-text text-transparent"
         >
           Contact Me
         </motion.h1>
@@ -80,45 +81,45 @@ const Contact: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="max-w-2xl mx-auto mb-16"
+          className="max-w-xl mx-auto mb-14"
         >
           <form 
             action="https://formsubmit.co/jeremyyhopkins@gmail.com" 
             method="POST"
             onSubmit={handleSubmit}
-            className="space-y-6"
+            className="space-y-5"
           >
             <input type="hidden" name="_subject" value="New Contact Form Submission" />
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_next" value={window.location.origin + '/contact-success'} />
             
             <div>
-              <label className="block text-lg mb-2">To:</label>
+              <label className="block text-base mb-2">To:</label>
               <input
                 type="text"
                 value="jeremyyhopkins@gmail.com"
                 disabled
-                className="w-full p-3 bg-gray-900 rounded-lg text-gray-400"
+                className="w-full p-2.5 bg-gray-900 rounded-lg text-gray-400"
               />
             </div>
             <div>
-              <label className="block text-lg mb-2">From:</label>
+              <label className="block text-base mb-2">From:</label>
               <input
                 type="email"
                 name="email"
                 required
                 placeholder="Enter your email"
-                className="w-full p-3 bg-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2.5 bg-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-lg mb-2">Message:</label>
+              <label className="block text-base mb-2">Message:</label>
               <textarea
                 name="message"
                 required
                 placeholder="Enter your message"
-                rows={6}
-                className="w-full p-3 bg-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={5}
+                className="w-full p-2.5 bg-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <motion.button
@@ -126,7 +127,7 @@ const Contact: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               type="submit"
               disabled={status === 'sending'}
-              className={`w-full py-4 rounded-lg font-medium text-lg transition-transform ${
+              className={`w-full py-3.5 rounded-lg font-medium text-base transition-transform ${
                 status === 'sending' 
                   ? 'bg-gray-500 cursor-not-allowed' 
                   : 'bg-blue-500 hover:bg-blue-600'
@@ -162,9 +163,9 @@ const Contact: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-3xl mx-auto"
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {socialLinks.map((social) => (
               <motion.a
                 key={social.name}
@@ -173,9 +174,9 @@ const Contact: React.FC = () => {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex flex-col items-center gap-4 p-6 bg-gray-900 rounded-lg transition-transform"
+                className="flex flex-col items-center gap-3 p-5 bg-gray-900 rounded-lg transition-transform"
               >
-                <div className="relative w-16 h-16">
+                <div className="relative w-14 h-14">
                   {/* Custom Logo */}
                   <img
                     src={social.logo}
@@ -189,17 +190,18 @@ const Contact: React.FC = () => {
                     }}
                   />
                   {/* Fallback Font Awesome Icon */}
-                  <i className={`${social.icon} text-5xl text-white absolute inset-0 flex items-center justify-center hidden`}></i>
+                  <i className={`${social.icon} text-4xl text-white absolute inset-0 flex items-center justify-center hidden`}></i>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-lg font-medium text-white">{social.name}</h3>
-                  <p className="text-gray-400">{social.handle}</p>
+                  <h3 className="text-base font-medium text-white">{social.name}</h3>
+                  <p className="text-gray-400 text-sm">{social.handle}</p>
                 </div>
               </motion.a>
             ))}
           </div>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 };

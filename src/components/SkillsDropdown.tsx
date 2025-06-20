@@ -11,15 +11,15 @@ const SkillsDropdown: React.FC = () => {
     },
     {
       category: "Frameworks & Libraries",
-      items: ["React", "Node.js", "Tailwind CSS", "TensorFlow", "PyTorch"]
+      items: ["React", "Node.js", "Tailwind CSS", "TensorFlow", "PyTorch", "NumPy", "Pandas"]
     },
     {
       category: "Tools & Technologies",
-      items: ["Git", "MongoDB", "SQL", "Linux"]
+      items: ["Git", "MongoDB", "SQL", "Linux", "Microsoft Office", "Microsoft SQL Server"]
     },
     {
       category: "Soft Skills",
-      items: ["Problem Solving", "Team Leadership", "Communication", "Project Management"]
+      items: ["Problem Solving", "Team Leadership", "Communication", "Project Management", "Attention to Detail"]
     }
   ];
 

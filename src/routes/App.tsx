@@ -1,4 +1,5 @@
 import NavBar from "../components/NavBar";
+import Chatbot from "../components/Chatbot";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import About from "./About";
 import Blog from "./Blog";
@@ -100,7 +101,7 @@ function App() {
                             className="hover:opacity-80 transition-opacity"
                           >
                             <img
-                              src="/Instagram_icon.png"
+                              src="/instagram-logo.png"
                               alt="Instagram"
                               className="w-6 h-6 md:w-8 md:h-8"
                             />
@@ -112,7 +113,7 @@ function App() {
                             className="hover:opacity-80 transition-opacity bg-white"
                           >
                             <img
-                              src="/facebook-icon-lg.png"
+                              src="/facebook-logo.png"
                               alt="Facebook"
                               className="w-6 h-6 md:w-8 md:h-8"
                             />
@@ -163,6 +164,9 @@ function App() {
                     </div>
                   </div>
                 </footer>
+                
+                {/* Chatbot */}
+                <Chatbot />
               </>
             }
           />
