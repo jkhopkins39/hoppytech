@@ -1,4 +1,8 @@
+import React from 'react';
+import { motion } from 'framer-motion';
 import EducationTimeline from "../components/EducationTimeline";
+import SkillsDropdown from "../components/SkillsDropdown";
+import ResumeSection from "../components/ResumeSection";
 
 function About() {
   const educationHistory = [
@@ -13,8 +17,15 @@ function About() {
       title: "University of West Georgia",
       period: "2021-2022",
       description:
-        "Description of your experience at your previous institution. Include any notable achievements, projects, or activities.",
-      image: "/previous-institution.jpg", // You'll need to add this image to your public folder
+        "During my time at UWG I gained experience in test-driven development, object-oriented programming, and software design. I also worked in the catering department and became very familiar with the facilities there.",
+      image: "/UWG.jpg", // You'll need to add this image to your public folder
+    },
+    {
+      title: "Bremen High School",
+      period: "2017-2021",
+      description:
+        "I graduated from Bremen High School in 2021. I was a member of the National Honor Society and the brass captain of the BHS Marching Blue Devils. I also worked in the Fine Arts Center as a sound and lighting technician.",
+      image: "/BHS.png", // You'll need to add this image to your public folder
     },
     // Add more education entries as needed
   ];
@@ -22,13 +33,45 @@ function About() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold mb-8 text-center">About Me</h1>
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-6xl font-bold mb-12 text-center bg-gradient-to-r from-[#ffbd62] to-[#ff8f62] bg-clip-text text-transparent"
+        >
+          About Me
+        </motion.h1>
+
+        {/* Decorative Divider */}
+        <div className="relative py-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-700"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              className="px-4 bg-black text-2xl font-bold text-[#ffbd62]"
+            >
+              Education Journey
+            </motion.div>
+          </div>
+        </div>
 
         {/* Education Timeline Section */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-center">Education</h2>
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mb-16"
+        >
           <EducationTimeline items={educationHistory} />
-        </section>
+        </motion.section>
+
+        {/* Skills Section */}
+        <SkillsDropdown />
+
+        {/* Resume Section */}
+        <ResumeSection />
       </div>
       {/* Footer Section */}
       <footer className="w-full bg-[#1a1a1a] text-white py-12">
