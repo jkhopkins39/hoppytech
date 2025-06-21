@@ -60,7 +60,7 @@ const Contact: React.FC = () => {
           >
             <input type="hidden" name="access_key" value="46cae387-addf-453a-a32f-6464199035c6" />
             <input type="hidden" name="subject" value="New Contact Form Submission" />
-            <input type="hidden" name="redirect" value="/thank-you" />
+            <input type="hidden" name="redirect" value="https://jkhopkins39.github.io/thank-you" />
             <div>
               <label className="block text-base mb-2">To:</label>
               <input
