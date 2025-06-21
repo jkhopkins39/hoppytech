@@ -13,23 +13,29 @@ const Contact: React.FC = () => {
       const form = e.currentTarget;
       const formData = new FormData(form);
       
+      // Add required FormSubmit fields
+      formData.append('_subject', 'New Contact Form Submission from Portfolio');
+      formData.append('_captcha', 'false');
+      formData.append('_template', 'table');
+      
       const response = await fetch('https://formsubmit.co/jeremyyhopkins@gmail.com', {
         method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json'
-        }
+        body: formData
       });
 
       if (response.ok) {
         setStatus('success');
         form.reset();
+        // Reset status after 5 seconds
+        setTimeout(() => setStatus('idle'), 5000);
       } else {
         throw new Error('Failed to send');
       }
     } catch (error) {
       console.error('Error sending email:', error);
       setStatus('error');
+      // Reset status after 5 seconds
+      setTimeout(() => setStatus('idle'), 5000);
     }
   };
 
@@ -84,15 +90,9 @@ const Contact: React.FC = () => {
           className="max-w-xl mx-auto mb-14"
         >
           <form 
-            action="https://formsubmit.co/jeremyyhopkins@gmail.com" 
-            method="POST"
             onSubmit={handleSubmit}
             className="space-y-5"
           >
-            <input type="hidden" name="_subject" value="New Contact Form Submission" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_next" value={window.location.origin + '/contact-success'} />
-            
             <div>
               <label className="block text-base mb-2">To:</label>
               <input
@@ -103,9 +103,21 @@ const Contact: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-base mb-2">From:</label>
+              <label className="block text-base mb-2" htmlFor="name">Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                placeholder="Enter your name"
+                className="w-full p-2.5 bg-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-base mb-2" htmlFor="email">From:</label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 required
                 placeholder="Enter your email"
@@ -113,8 +125,9 @@ const Contact: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-base mb-2">Message:</label>
+              <label className="block text-base mb-2" htmlFor="message">Message:</label>
               <textarea
+                id="message"
                 name="message"
                 required
                 placeholder="Enter your message"
@@ -127,32 +140,39 @@ const Contact: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               type="submit"
               disabled={status === 'sending'}
-              className={`w-full py-3.5 rounded-lg font-medium text-base transition-transform ${
+              className={`w-full py-3.5 rounded-lg font-medium text-base transition-all duration-300 ${
                 status === 'sending' 
                   ? 'bg-gray-500 cursor-not-allowed' 
+                  : status === 'success'
+                  ? 'bg-green-500 hover:bg-green-600'
+                  : status === 'error'
+                  ? 'bg-red-500 hover:bg-red-600'
                   : 'bg-blue-500 hover:bg-blue-600'
               }`}
             >
-              {status === 'sending' ? 'Sending...' : 'Send Message'}
+              {status === 'sending' ? 'Sending...' : 
+               status === 'success' ? 'Message Sent!' : 
+               status === 'error' ? 'Try Again' : 
+               'Send Message'}
             </motion.button>
 
             {/* Status Messages */}
             {status === 'success' && (
               <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="text-green-500 text-center"
               >
-                Message sent successfully!
+                ✅ Message sent successfully! I'll get back to you soon.
               </motion.p>
             )}
             {status === 'error' && (
               <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="text-red-500 text-center"
               >
-                Failed to send message. Please try again.
+                ❌ Failed to send message. Please try again or email me directly.
               </motion.p>
             )}
           </form>
