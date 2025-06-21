@@ -6,6 +6,7 @@ import Blog from "./Blog";
 import Creative from "./Creative";
 import Contact from "./Contact";
 import Portfolio from "./Portfolio";
+import ThankYou from "./ThankYou";
 import { socialLinks, contactInfo } from "../config/socialLinks";
 
 function App() {
@@ -175,6 +176,7 @@ function App() {
           <Route path="/creative" element={<Creative />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/thank-you" element={<ThankYou />} />
         </Routes>
       </main>
     </div>

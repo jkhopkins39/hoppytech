@@ -1,38 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Footer from '../components/Footer';
 
 const Contact: React.FC = () => {
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setStatus('sending');
-
-    try {
-      const form = e.currentTarget;
-      const formData = new FormData(form);
-      
-      const response = await fetch('https://formsubmit.co/jeremyyhopkins@gmail.com', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        setStatus('success');
-        form.reset();
-      } else {
-        throw new Error('Failed to send');
-      }
-    } catch (error) {
-      console.error('Error sending email:', error);
-      setStatus('error');
-    }
-  };
-
   const socialLinks = [
     {
       name: 'Instagram',
@@ -84,15 +54,13 @@ const Contact: React.FC = () => {
           className="max-w-xl mx-auto mb-14"
         >
           <form 
-            action="https://formsubmit.co/jeremyyhopkins@gmail.com" 
+            action="https://api.web3forms.com/submit"
             method="POST"
-            onSubmit={handleSubmit}
             className="space-y-5"
           >
-            <input type="hidden" name="_subject" value="New Contact Form Submission" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_next" value={window.location.origin + '/contact-success'} />
-            
+            <input type="hidden" name="access_key" value="46cae387-addf-453a-a32f-6464199035c6" />
+            <input type="hidden" name="subject" value="New Contact Form Submission" />
+            <input type="hidden" name="redirect" value="/thank-you" />
             <div>
               <label className="block text-base mb-2">To:</label>
               <input
@@ -126,35 +94,10 @@ const Contact: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               type="submit"
-              disabled={status === 'sending'}
-              className={`w-full py-3.5 rounded-lg font-medium text-base transition-transform ${
-                status === 'sending' 
-                  ? 'bg-gray-500 cursor-not-allowed' 
-                  : 'bg-blue-500 hover:bg-blue-600'
-              }`}
+              className="w-full py-3.5 rounded-lg font-medium text-base transition-transform bg-blue-500 hover:bg-blue-600"
             >
-              {status === 'sending' ? 'Sending...' : 'Send Message'}
+              Send Message
             </motion.button>
-
-            {/* Status Messages */}
-            {status === 'success' && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-green-500 text-center"
-              >
-                Message sent successfully!
-              </motion.p>
-            )}
-            {status === 'error' && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-red-500 text-center"
-              >
-                Failed to send message. Please try again.
-              </motion.p>
-            )}
           </form>
         </motion.div>
 
