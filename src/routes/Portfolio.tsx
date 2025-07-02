@@ -24,9 +24,9 @@ const Portfolio: React.FC = () => {
       title: "Watch Trading Post",
       description: "A web application that allows users to buy and sell watches. It is built with React, Node.js, and Tailwind CSS. It also includes a chatbot that can answer questions about the watches.",
       shortDescription: "A web app for buying and selling watches",
-      image: "/projects/ai-chat.png",
+      image: "../../public/watch-website.png",
       technologies: ["React", "Node.js", "Tailwind CSS", "OpenAI API"],
-      repoUrl: "https://github.com/jkhopkins39/ai-chat-app",
+      repoUrl: "",
       liveUrl: "https://ai-chat-app.vercel.app",
       category: "ai"
     }
@@ -46,7 +46,7 @@ const Portfolio: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 pb-44">
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

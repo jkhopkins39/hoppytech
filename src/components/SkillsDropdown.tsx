@@ -36,7 +36,7 @@ const SkillsDropdown: React.FC = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="bg-blue-500 text-white px-8 py-4 rounded-lg font-medium flex items-center gap-3 transition-transform"
+          className="bg-blue-500 text-white px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 rounded-lg font-medium flex items-center gap-2 sm:gap-3 transition-transform text-sm sm:text-base"
         >
           <span>Skills & Expertise</span>
           <motion.i
@@ -61,23 +61,23 @@ const SkillsDropdown: React.FC = () => {
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8 mt-6 sm:mt-8">
               {skills.map((skillGroup, index) => (
                 <motion.div
                   key={skillGroup.category}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-gray-900 p-6 rounded-lg"
+                  className="bg-gray-900 p-3 sm:p-4 md:p-6 rounded-lg"
                 >
-                  <h3 className="text-red-500 text-xl font-bold mb-4">
+                  <h3 className="text-red-500 text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4">
                     {skillGroup.category}
                   </h3>
-                  <ul className="space-y-2">
+                  <ul className="space-y-1 sm:space-y-2">
                     {skillGroup.items.map((skill) => (
-                      <li key={skill} className="text-white flex items-center gap-2">
-                        <i className="fas fa-check text-[#ffbd62]"></i>
-                        {skill}
+                      <li key={skill} className="text-white flex items-center gap-2 text-xs sm:text-sm md:text-base">
+                        <i className="fas fa-check text-[#ffbd62] flex-shrink-0 text-xs sm:text-sm"></i>
+                        <span>{skill}</span>
                       </li>
                     ))}
                   </ul>

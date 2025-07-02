@@ -22,16 +22,13 @@ const EducationTimeline: React.FC<EducationTimelineProps> = ({ items }) => {
         {items.map((item, index) => (
           <div
             key={index}
-            className={`relative flex items-center ${
-              index % 2 === 0 ? "justify-start" : "justify-end"
-            }`}
+            className="relative flex justify-center"
           >
             {/* Content container */}
-            <div
-              className={`w-5/12 p-6 rounded-lg shadow-lg ${
-                index % 2 === 0 ? "bg-blue-500" : "bg-red-500"
-              } text-white`}
-            >
+            <div className="w-full max-w-2xl p-6 rounded-lg shadow-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white relative">
+              {/* Timeline dot */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 -top-3 w-6 h-6 bg-white rounded-full border-4 border-blue-500 z-10"></div>
+              
               {/* Image container with drop shadow */}
               <div className="mb-4 overflow-hidden rounded-lg shadow-xl">
                 <img
@@ -44,11 +41,11 @@ const EducationTimeline: React.FC<EducationTimelineProps> = ({ items }) => {
               {/* Title and period */}
               <div className="mb-2">
                 <h3 className="text-xl font-bold">{item.title}</h3>
-                <p className="text-sm font-semibold">{item.period}</p>
+                <p className="text-sm font-semibold opacity-90">{item.period}</p>
               </div>
 
               {/* Description */}
-              <p className="text-base">{item.description}</p>
+              <p className="text-base leading-relaxed">{item.description}</p>
             </div>
           </div>
         ))}

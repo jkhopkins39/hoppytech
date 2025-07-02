@@ -13,10 +13,10 @@ const ResumeSection: React.FC = () => {
 
   return (
     <div className="w-full mb-16">
-      <div className="flex justify-center relative">
+      <div className="flex flex-col lg:flex-row justify-center items-center gap-6 lg:gap-8 relative">
         {/* Resume Preview */}
         <motion.div
-          className="w-96 bg-gray-900 rounded-lg overflow-hidden shadow-xl cursor-pointer"
+          className="w-full max-w-sm lg:w-96 bg-gray-900 rounded-lg overflow-hidden shadow-xl cursor-pointer"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsExpanded(!isExpanded)}
@@ -37,37 +37,37 @@ const ResumeSection: React.FC = () => {
         </motion.div>
 
         {/* Action Buttons */}
-        <div className="absolute right-0 flex flex-col gap-6 w-96">
+        <div className="flex flex-col gap-4 lg:gap-6 w-full max-w-sm lg:w-96">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-blue-500 text-white px-8 py-4 rounded-lg font-medium flex items-center gap-3 justify-center text-lg transition-transform"
+            className="bg-blue-500 text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg font-medium flex items-center gap-3 justify-center text-sm sm:text-base lg:text-lg transition-transform"
             onClick={() => window.open('/resume.pdf', '_blank')}
           >
-            <i className="fas fa-file-pdf text-2xl"></i>
+            <i className="fas fa-file-pdf text-lg sm:text-xl lg:text-2xl"></i>
             <span>PDF</span>
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-blue-500 text-white px-8 py-4 rounded-lg font-medium flex items-center gap-3 justify-center text-lg transition-transform"
+            className="bg-blue-500 text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg font-medium flex items-center gap-3 justify-center text-sm sm:text-base lg:text-lg transition-transform"
             onClick={() => window.open('/resume.docx', '_blank')}
           >
-            <i className="fas fa-file-word text-2xl"></i>
+            <i className="fas fa-file-word text-lg sm:text-xl lg:text-2xl"></i>
             <span>DOCX</span>
           </motion.button>
-          <div className="bg-red-500 rounded-lg shadow-xl p-4">
-            <h3 className="text-white text-lg font-medium mb-4">Share Options</h3>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="bg-red-500 rounded-lg shadow-xl p-3 sm:p-4">
+            <h3 className="text-white text-base sm:text-lg font-medium mb-3 sm:mb-4">Share Options</h3>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {shareOptions.map((option) => (
                 <motion.button
                   key={option.name}
                   onClick={option.action}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full px-4 py-3 text-left text-white rounded-lg flex items-center gap-3 transition-transform"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left text-white rounded-lg flex items-center gap-2 sm:gap-3 transition-transform text-xs sm:text-sm"
                 >
-                  <i className={`${option.icon} text-white text-xl`}></i>
+                  <i className={`${option.icon} text-white text-sm sm:text-lg lg:text-xl`}></i>
                   <span>{option.name}</span>
                 </motion.button>
               ))}
@@ -83,7 +83,7 @@ const ResumeSection: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-2 sm:p-4"
             onClick={() => setIsExpanded(false)}
           >
             <motion.div
@@ -100,9 +100,9 @@ const ResumeSection: React.FC = () => {
               />
               <button
                 onClick={() => setIsExpanded(false)}
-                className="absolute top-4 right-4 text-white bg-black bg-opacity-75 rounded-full p-3 hover:bg-opacity-100 transition-all flex items-center justify-center w-10 h-10"
+                className="absolute top-2 sm:top-4 right-2 sm:right-4 text-white bg-black bg-opacity-75 rounded-full p-2 sm:p-3 hover:bg-opacity-100 transition-all flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10"
               >
-                <i className="fas fa-times text-xl"></i>
+                <i className="fas fa-times text-lg sm:text-xl"></i>
               </button>
             </motion.div>
           </motion.div>

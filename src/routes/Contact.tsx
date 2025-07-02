@@ -34,24 +34,38 @@ const Contact: React.FC = () => {
     }
   ];
 
+  // Determine redirect URL based on environment
+  const redirectUrl = import.meta.env.DEV 
+    ? 'http://localhost:5173/thank-you'
+    : 'https://jkhopkins39.github.io/thank-you';
+
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="container mx-auto px-4 py-10">
+      <div className="container mx-auto px-4 py-8">
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-5xl font-bold mb-10 text-center bg-gradient-to-r from-[#ffbd62] to-[#ff8f62] bg-clip-text text-transparent"
+          className="text-5xl font-bold mb-3 text-center bg-gradient-to-r from-[#ffbd62] to-[#ff8f62] bg-clip-text text-transparent"
         >
           Contact Me
         </motion.h1>
+        
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-xl text-gray-300 text-center mb-8 max-w-3xl mx-auto leading-relaxed"
+        >
+          Get in touch to discuss professional opportunities, project collaborations, or to learn more about my services and expertise.
+        </motion.p>
 
         {/* Email Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="max-w-xl mx-auto mb-14"
+          className="max-w-xl mx-auto mb-10"
         >
           <form 
             action="https://api.web3forms.com/submit"
@@ -60,7 +74,7 @@ const Contact: React.FC = () => {
           >
             <input type="hidden" name="access_key" value="46cae387-addf-453a-a32f-6464199035c6" />
             <input type="hidden" name="subject" value="New Contact Form Submission" />
-            <input type="hidden" name="redirect" value="https://jkhopkins39.github.io/thank-you" />
+            <input type="hidden" name="redirect" value={redirectUrl} />
             <div>
               <label className="block text-base mb-2">To:</label>
               <input
