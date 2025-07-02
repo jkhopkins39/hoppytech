@@ -17,7 +17,7 @@ npm install
 Create a `.env` file in the root directory with your OpenAI API key:
 
 ```
-OPENAI_API_KEY=REMOVED_KEY
+OPENAI_API_KEY=your_openai_api_key_here
 PORT=3001
 ```
 
