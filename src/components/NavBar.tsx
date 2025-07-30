@@ -105,17 +105,17 @@ const NavBar = () => {
 
           {/* Mobile Menu Content */}
           <div 
-            className={`fixed top-0 right-0 h-full w-64 sm:w-72 bg-[#1a1a1a] shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
+            className={`fixed top-0 right-0 h-full w-64 sm:w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
               isMenuOpen ? 'translate-x-0' : 'translate-x-full'
             }`}
           >
             <div className="flex flex-col h-full">
               {/* Menu Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <h2 className="text-white text-lg font-semibold">Menu</h2>
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+                <h2 className="text-gray-900 text-xl font-bold">Menu</h2>
                 <button
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-gray-500 hover:text-gray-700 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-200"
                   aria-label="Close menu"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,39 +128,39 @@ const NavBar = () => {
               <div className="flex-1 py-4">
                 <button
                   onClick={() => handleClick("/about")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-blue-500 active:bg-blue-600 focus:bg-blue-500 transition-colors duration-200 font-medium text-lg border-b border-gray-700 last:border-b-0"
+                  className="w-full text-left px-6 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-700 active:bg-blue-100 focus:bg-blue-50 focus:text-blue-700 transition-all duration-200 font-semibold text-lg border-b border-gray-100 last:border-b-0"
                 >
                   About
                 </button>
                 <button
                   onClick={() => handleClick("/portfolio")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-blue-500 active:bg-blue-600 focus:bg-blue-500 transition-colors duration-200 font-medium text-lg border-b border-gray-700 last:border-b-0"
+                  className="w-full text-left px-6 py-4 text-gray-800 hover:bg-purple-50 hover:text-purple-700 active:bg-purple-100 focus:bg-purple-50 focus:text-purple-700 transition-all duration-200 font-semibold text-lg border-b border-gray-100 last:border-b-0"
                 >
                   Portfolio
                 </button>
                 <button
                   onClick={() => handleClick("/creative")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-blue-500 active:bg-blue-600 focus:bg-blue-500 transition-colors duration-200 font-medium text-lg border-b border-gray-700 last:border-b-0"
+                  className="w-full text-left px-6 py-4 text-gray-800 hover:bg-green-50 hover:text-green-700 active:bg-green-100 focus:bg-green-50 focus:text-green-700 transition-all duration-200 font-semibold text-lg border-b border-gray-100 last:border-b-0"
                 >
                   Creative
                 </button>
                 <button
                   onClick={() => handleClick("/contact")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-blue-500 active:bg-blue-600 focus:bg-blue-500 transition-colors duration-200 font-medium text-lg border-b border-gray-700 last:border-b-0"
+                  className="w-full text-left px-6 py-4 text-gray-800 hover:bg-orange-50 hover:text-orange-700 active:bg-orange-100 focus:bg-orange-50 focus:text-orange-700 transition-all duration-200 font-semibold text-lg border-b border-gray-100 last:border-b-0"
                 >
                   Contact
                 </button>
                 <button
                   onClick={() => handleClick("/blog")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-blue-500 active:bg-blue-600 focus:bg-blue-500 transition-colors duration-200 font-medium text-lg border-b border-gray-700 last:border-b-0"
+                  className="w-full text-left px-6 py-4 text-gray-800 hover:bg-indigo-50 hover:text-indigo-700 active:bg-indigo-100 focus:bg-indigo-50 focus:text-indigo-700 transition-all duration-200 font-semibold text-lg border-b border-gray-100 last:border-b-0"
                 >
                   Blog
                 </button>
               </div>
 
               {/* Menu Footer */}
-              <div className="p-4 border-t border-gray-700">
-                <p className="text-gray-400 text-sm text-center">
+              <div className="p-6 border-t border-gray-200 bg-gray-50">
+                <p className="text-gray-500 text-sm text-center font-medium">
                   © 2024 Jeremy Hopkins
                 </p>
               </div>
