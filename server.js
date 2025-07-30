@@ -64,6 +64,27 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Admin authentication endpoint
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    // Use environment variables for credentials
+    const ADMIN_USERNAME = process.env.USERNAME;
+    const ADMIN_PASSWORD = process.env.PASSWORD;
+    
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      // In a real app, you'd generate a JWT token here
+      res.json({ success: true, message: 'Login successful' });
+    } else {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Serve the main application for all other routes
 app.get('*', (req, res) => {
   res.sendFile('dist/index.html', { root: '.' });

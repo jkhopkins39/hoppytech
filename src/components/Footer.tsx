@@ -1,25 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { socialLinks, contactInfo } from '../config/socialLinks';
 
 const Footer: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
 
-  // Hardcoded credentials (you can change these)
-  const ADMIN_USERNAME = "jeremy";
-  const ADMIN_PASSWORD = "bcs11482";
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginForm.username === ADMIN_USERNAME && loginForm.password === ADMIN_PASSWORD) {
-      setIsLoggedIn(true);
-      setLoginForm({ username: "", password: "" });
-      setShowLogin(false);
-      // Store login state in localStorage
-      localStorage.setItem('blogAdminLoggedIn', 'true');
-    } else {
-      alert("Invalid credentials!");
+    try {
+      // Use local backend for development, Railway for production
+      const apiUrl = import.meta.env.DEV
+        ? 'http://localhost:3001/api/admin/login'
+        : 'https://your-backend-url.com/api/admin/login'; // <-- Replace with your deployed backend URL
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: loginForm.username,
+          password: loginForm.password,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setIsLoggedIn(true);
+        setLoginForm({ username: '', password: '' });
+        setShowLogin(false);
+        localStorage.setItem('blogAdminLoggedIn', 'true');
+      } else {
+        alert('Invalid credentials!');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Please try again.');
     }
   };
 
@@ -28,8 +45,7 @@ const Footer: React.FC = () => {
     localStorage.removeItem('blogAdminLoggedIn');
   };
 
-  // Check if already logged in on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     const loggedIn = localStorage.getItem('blogAdminLoggedIn');
     if (loggedIn === 'true') {
       setIsLoggedIn(true);
@@ -149,7 +165,7 @@ const Footer: React.FC = () => {
                       type="text"
                       placeholder="Username"
                       value={loginForm.username}
-                      onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
+                      onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
                       className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs focus:outline-none focus:border-blue-500"
                       required
                     />
@@ -157,7 +173,7 @@ const Footer: React.FC = () => {
                       type="password"
                       placeholder="Password"
                       value={loginForm.password}
-                      onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                      onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                       className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs focus:outline-none focus:border-blue-500"
                       required
                     />
