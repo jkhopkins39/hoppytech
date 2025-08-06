@@ -26,8 +26,8 @@ const SkillsDropdown: React.FC = () => {
   return (
     <div className="w-full mb-16">
       {/* Full width line */}
-      <div className="w-full h-px bg-black relative">
-        <div className="absolute inset-0 bg-white opacity-20"></div>
+      <div className="w-full h-px bg-gray-700 relative">
+        <div className="absolute inset-0 bg-gray-500 opacity-30"></div>
       </div>
       
       {/* Button container */}
@@ -47,8 +47,8 @@ const SkillsDropdown: React.FC = () => {
       </div>
 
       {/* Full width line */}
-      <div className="w-full h-px bg-black relative">
-        <div className="absolute inset-0 bg-white opacity-20"></div>
+      <div className="w-full h-px bg-gray-700 relative">
+        <div className="absolute inset-0 bg-gray-500 opacity-30"></div>
       </div>
 
       {/* Skills content */}

@@ -22,13 +22,35 @@ const Portfolio: React.FC = () => {
     {
       id: 1,
       title: "Watch Trading Post",
-      description: "A web application that allows users to buy and sell watches. It is built with React, Node.js, and Tailwind CSS. It also includes a chatbot that can answer questions about the watches.",
-      shortDescription: "A web app for buying and selling watches",
+      description: "A luxury timepiece marketplace showcasing exceptional watches from the world's finest brands. Features an elegant design with smooth animations and a comprehensive collection of high-end timepieces for discerning collectors.",
+      shortDescription: "Luxury timepiece marketplace",
       image: "../../public/watch-website.png",
-      technologies: ["React", "Node.js", "Tailwind CSS", "OpenAI API"],
+      technologies: ["React", "Node.js", "Tailwind CSS", "Modern UI/UX"],
       repoUrl: "",
-      liveUrl: "https://ai-chat-app.vercel.app",
-      category: "ai"
+      liveUrl: "https://www.watchtradingpost.com/",
+      category: "web"
+    },
+    {
+      id: 2,
+      title: "Landlock Solutions LLC",
+      description: "A professional business website showcasing comprehensive solutions and services. Built with modern web technologies to provide an excellent user experience and clear communication of business offerings.",
+      shortDescription: "Professional business solutions website",
+      image: "../../public/placeholder-project.png",
+      technologies: ["React", "Node.js", "Tailwind CSS", "Business Solutions"],
+      repoUrl: "",
+      liveUrl: "https://landlocksolutionsllc.com",
+      category: "web"
+    },
+    {
+      id: 3,
+      title: "SXNCTUARY",
+      description: "A modern web platform featuring innovative design and functionality. This project demonstrates advanced web development techniques and creative user interface design.",
+      shortDescription: "Modern web platform with innovative design",
+      image: "../../public/placeholder-project.png",
+      technologies: ["React", "Node.js", "Tailwind CSS", "Modern Design"],
+      repoUrl: "",
+      liveUrl: "https://sxnctuary.com",
+      category: "web"
     }
   ];
 
