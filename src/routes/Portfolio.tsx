@@ -24,7 +24,7 @@ const Portfolio: React.FC = () => {
       title: "Watch Trading Post",
       description: "A luxury timepiece marketplace showcasing exceptional watches from the world's finest brands. Features an elegant design with smooth animations and a comprehensive collection of high-end timepieces for discerning collectors.",
       shortDescription: "Luxury timepiece marketplace",
-      image: "../../public/watch-website.png",
+      image: "/watch.png",
       technologies: ["React", "Node.js", "Tailwind CSS", "Modern UI/UX"],
       repoUrl: "",
       liveUrl: "https://www.watchtradingpost.com/",
@@ -35,7 +35,7 @@ const Portfolio: React.FC = () => {
       title: "Landlock Solutions LLC",
       description: "A professional business website showcasing comprehensive solutions and services. Built with modern web technologies to provide an excellent user experience and clear communication of business offerings.",
       shortDescription: "Professional business solutions website",
-      image: "../../public/placeholder-project.png",
+      image: "/land.png",
       technologies: ["React", "Node.js", "Tailwind CSS", "Business Solutions"],
       repoUrl: "",
       liveUrl: "https://landlocksolutionsllc.com",
@@ -46,13 +46,16 @@ const Portfolio: React.FC = () => {
       title: "SXNCTUARY",
       description: "A modern web platform featuring innovative design and functionality. This project demonstrates advanced web development techniques and creative user interface design.",
       shortDescription: "Modern web platform with innovative design",
-      image: "../../public/placeholder-project.png",
+      image: "/sxnctuary.png",
       technologies: ["React", "Node.js", "Tailwind CSS", "Modern Design"],
       repoUrl: "",
       liveUrl: "https://sxnctuary.com",
       category: "web"
     }
   ];
+
+  // Debug: Log image paths
+  console.log('Portfolio projects:', projects.map(p => ({ title: p.title, image: p.image })));
 
   const categories = [
     { id: 'all', name: 'All Projects' },
@@ -127,7 +130,8 @@ const Portfolio: React.FC = () => {
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = '/placeholder-project.png';
+                    console.error(`Failed to load image: ${project.image}`);
+                    target.style.display = 'none';
                   }}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
