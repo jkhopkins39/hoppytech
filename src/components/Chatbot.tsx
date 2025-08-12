@@ -91,10 +91,10 @@ Be helpful, professional, and enthusiastic about Jeremy's work. Keep responses c
     setIsLoading(true);
 
     try {
-      // Use local backend for development, Railway for production
+      // Use local backend for development, Vercel API for production
       const apiUrl = import.meta.env.DEV 
         ? 'http://localhost:3001/api/chat'
-        : 'https://jeremy-backend-production.up.railway.app/api/chat';
+        : '/api/chat';
 
       const response = await fetch(apiUrl, {
         method: 'POST',

@@ -50,8 +50,8 @@ npm run dev
 
 ## Deployment
 
-### Frontend (Vercel)
-The frontend is deployed on Vercel with automatic deployments from the main branch.
+### Full Stack (Vercel)
+The entire application is deployed on Vercel with automatic deployments from the main branch.
 
 **Live Site**: https://hoppytech.com
 
@@ -65,9 +65,34 @@ npm run build
 vercel --prod
 ```
 
-### Backend (Railway)
-The backend API is deployed on Railway for the chatbot functionality.
+### Local Development
+To run the application locally:
+
+1. **Start the frontend**:
+```bash
+npm run dev
+```
+
+2. **Start the development server** (in a separate terminal):
+```bash
+npm run dev:server
+```
+
+The frontend will run on `http://localhost:5173` and the API server on `http://localhost:3001`.
 
 ## Environment Variables
+
+### For Production (Vercel)
+Add these environment variables in your Vercel project settings:
 - `OPENAI_API_KEY`: Required for chatbot functionality
-- `PORT`: Server port (default: 3001) 
+- `USERNAME`: Admin username (optional)
+- `PASSWORD`: Admin password (optional)
+
+### For Local Development
+Create a `.env` file in the root directory:
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+USERNAME=admin_username
+PASSWORD=admin_password
+PORT=3001
+``` 

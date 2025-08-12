@@ -9,10 +9,10 @@ const Footer: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Use local backend for development, Railway for production
+      // Use local backend for development, Vercel API for production
       const apiUrl = import.meta.env.DEV
         ? 'http://localhost:3001/api/admin/login'
-        : 'https://your-backend-url.com/api/admin/login'; // <-- Replace with your deployed backend URL
+        : '/api/admin/login';
 
       const response = await fetch(apiUrl, {
         method: 'POST',

@@ -8,6 +8,8 @@ interface Project {
   description: string;
   shortDescription: string;
   image: string;
+  imageWebP?: string;
+  imageFallback?: string;
   technologies: string[];
   repoUrl?: string;
   liveUrl?: string;
@@ -24,7 +26,9 @@ const Portfolio: React.FC = () => {
       title: "Watch Trading Post",
       description: "A luxury timepiece marketplace showcasing exceptional watches from the world's finest brands. Features an elegant design with smooth animations and a comprehensive collection of high-end timepieces for discerning collectors.",
       shortDescription: "Luxury timepiece marketplace",
-      image: "/watch.png",
+      image: "/watch.webp",
+      imageWebP: "/watch.webp",
+      imageFallback: "/watch.png",
       technologies: ["React", "Node.js", "Tailwind CSS", "Modern UI/UX"],
       repoUrl: "",
       liveUrl: "https://www.watchtradingpost.com/",
@@ -35,7 +39,9 @@ const Portfolio: React.FC = () => {
       title: "Landlock Solutions LLC",
       description: "A professional business website showcasing comprehensive solutions and services. Built with modern web technologies to provide an excellent user experience and clear communication of business offerings.",
       shortDescription: "Professional business solutions website",
-      image: "/land.png",
+      image: "/land.webp",
+      imageWebP: "/land.webp",
+      imageFallback: "/land.png",
       technologies: ["React", "Node.js", "Tailwind CSS", "Business Solutions"],
       repoUrl: "",
       liveUrl: "https://landlocksolutionsllc.com",
@@ -46,7 +52,9 @@ const Portfolio: React.FC = () => {
       title: "SXNCTUARY",
       description: "A modern web platform featuring innovative design and functionality. This project demonstrates advanced web development techniques and creative user interface design.",
       shortDescription: "Modern web platform with innovative design",
-      image: "/sxnctuary.png",
+      image: "/sxnctuary.webp",
+      imageWebP: "/sxnctuary.webp",
+      imageFallback: "/sxnctuary.png",
       technologies: ["React", "Node.js", "Tailwind CSS", "Modern Design"],
       repoUrl: "",
       liveUrl: "https://sxnctuary.com",
@@ -124,16 +132,24 @@ const Portfolio: React.FC = () => {
             >
               {/* Project Image */}
               <div className="relative h-48 overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    console.error(`Failed to load image: ${project.image}`);
-                    target.style.display = 'none';
-                  }}
-                />
+                <picture>
+                  <source srcSet={project.imageWebP} type="image/webp" />
+                  <img
+                    src={project.imageFallback || project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      console.error(`Failed to load image: ${project.image}`);
+                      if (project.imageFallback && project.imageFallback !== project.image) {
+                        target.src = project.imageFallback;
+                      } else {
+                        target.style.display = 'none';
+                      }
+                    }}
+                  />
+                </picture>
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                   <div className="text-center">
                     <i className="fas fa-expand text-3xl text-white mb-2"></i>

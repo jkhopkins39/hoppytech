@@ -26,10 +26,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Serve static files from dist directory
-app.use(express.static('dist'));
-
-// Chat API endpoint
+// Chat API endpoint (mimics /api/chat)
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
@@ -67,16 +64,17 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// Health check endpoint
+// Health check endpoint (mimics /api/health)
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    openaiConfigured: !!process.env.OPENAI_API_KEY
+    openaiConfigured: !!process.env.OPENAI_API_KEY,
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// Admin authentication endpoint
+// Admin authentication endpoint (mimics /api/admin/login)
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -97,13 +95,12 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
-// Serve the main application for all other routes
-app.get('*', (req, res) => {
-  res.sendFile('dist/index.html', { root: '.' });
-});
-
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Development server running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`OpenAI API Key configured: ${process.env.OPENAI_API_KEY ? 'Yes' : 'No'}`);
-}); 
+  console.log(`API endpoints available:`);
+  console.log(`  - POST /api/chat`);
+  console.log(`  - GET /api/health`);
+  console.log(`  - POST /api/admin/login`);
+});
