@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
       // Use local backend for development, Vercel API for production
       const apiUrl = import.meta.env.DEV
         ? 'http://localhost:3001/api/admin/login'
-        : '/api/admin/login';
+        : 'https://www.hoppytech.com/api/admin/login';
 
       const response = await fetch(apiUrl, {
         method: 'POST',

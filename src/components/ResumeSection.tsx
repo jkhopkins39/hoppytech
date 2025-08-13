@@ -4,6 +4,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 const ResumeSection: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const downloadResume = (format: 'pdf' | 'docx') => {
+    const filename = format === 'pdf' ? 'Jeremy_Hopkins_Resume.pdf' : 'Jeremy_Hopkins_Resume.docx';
+    const fileUrl = format === 'pdf' ? '/resume-pdf.pdf' : '/resume-docx.docx';
+    
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = filename;
+    link.target = '_blank';
+    
+    // Append to body, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const shareOptions = [
     { name: 'LinkedIn', icon: 'fab fa-linkedin', action: () => window.open('https://linkedin.com/share', '_blank') },
     { name: 'Email', icon: 'fas fa-envelope', action: () => window.location.href = 'mailto:?subject=Resume&body=Check out my resume!' },
@@ -42,7 +58,7 @@ const ResumeSection: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="bg-blue-500 text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg font-medium flex items-center gap-3 justify-center text-sm sm:text-base lg:text-lg transition-transform"
-            onClick={() => window.open('/resume.pdf', '_blank')}
+            onClick={() => downloadResume('pdf')}
           >
             <i className="fas fa-file-pdf text-lg sm:text-xl lg:text-2xl"></i>
             <span>PDF</span>
@@ -51,7 +67,7 @@ const ResumeSection: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="bg-blue-500 text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg font-medium flex items-center gap-3 justify-center text-sm sm:text-base lg:text-lg transition-transform"
-            onClick={() => window.open('/resume.docx', '_blank')}
+            onClick={() => downloadResume('docx')}
           >
             <i className="fas fa-file-word text-lg sm:text-xl lg:text-2xl"></i>
             <span>DOCX</span>
@@ -65,10 +81,10 @@ const ResumeSection: React.FC = () => {
                   onClick={option.action}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left text-white rounded-lg flex items-center gap-2 sm:gap-3 transition-transform text-xs sm:text-sm"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-white hover:bg-gray-100 text-black rounded-lg flex items-center gap-2 sm:gap-3 transition-all text-sm sm:text-base font-medium shadow-md"
                 >
-                  <i className={`${option.icon} text-white text-sm sm:text-lg lg:text-xl`}></i>
-                  <span>{option.name}</span>
+                  <i className={`${option.icon} text-black text-base sm:text-lg lg:text-xl`}></i>
+                  <span className="font-semibold">{option.name}</span>
                 </motion.button>
               ))}
             </div>
@@ -94,7 +110,7 @@ const ResumeSection: React.FC = () => {
               onClick={e => e.stopPropagation()}
             >
               <iframe
-                src="/resume.pdf"
+                src="/resume-pdf.pdf"
                 className="w-full h-full"
                 title="Resume PDF"
               />

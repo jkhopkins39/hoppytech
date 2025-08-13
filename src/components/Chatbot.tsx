@@ -94,7 +94,7 @@ Be helpful, professional, and enthusiastic about Jeremy's work. Keep responses c
       // Use local backend for development, Vercel API for production
       const apiUrl = import.meta.env.DEV 
         ? 'http://localhost:3001/api/chat'
-        : '/api/chat';
+        : 'https://www.hoppytech.com/api/chat';
 
       const response = await fetch(apiUrl, {
         method: 'POST',
