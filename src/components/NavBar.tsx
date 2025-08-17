@@ -100,14 +100,15 @@ const NavBar = () => {
 
           {/* Mobile Menu Overlay */}
           {isMenuOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsMenuOpen(false)} />
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40 pointer-events-auto" onClick={() => setIsMenuOpen(false)} />
           )}
 
           {/* Mobile Menu Content */}
           <div 
-            className={`fixed top-0 right-0 h-full w-64 sm:w-72 bg-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
+            className={`fixed top-0 right-0 h-full w-64 sm:w-72 bg-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 overflow-hidden ${
               isMenuOpen ? 'translate-x-0' : 'translate-x-full'
             }`}
+            style={{ zIndex: 9999 }}
           >
             <div className="flex flex-col h-full">
               {/* Menu Header */}
@@ -125,34 +126,39 @@ const NavBar = () => {
               </div>
 
               {/* Menu Items */}
-              <div className="flex-1 py-4">
+              <div className="flex-1 py-4 relative z-10">
                 <button
                   onClick={() => handleClick("/about")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-blue-600 hover:text-white active:bg-blue-700 focus:bg-blue-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700"
+                  className="w-full text-left px-6 py-4 text-white hover:bg-blue-600 hover:text-white active:bg-blue-700 focus:bg-blue-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10"
+                  style={{ color: 'white !important', backgroundColor: 'transparent' }}
                 >
                   About
                 </button>
                 <button
                   onClick={() => handleClick("/portfolio")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-purple-600 hover:text-white active:bg-purple-700 focus:bg-purple-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700"
+                  className="w-full text-left px-6 py-4 text-white hover:bg-purple-600 hover:text-white active:bg-purple-700 focus:bg-purple-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10"
+                  style={{ color: 'white !important', backgroundColor: 'transparent' }}
                 >
                   Portfolio
                 </button>
                 <button
                   onClick={() => handleClick("/creative")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-green-600 hover:text-white active:bg-green-700 focus:bg-green-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700"
+                  className="w-full text-left px-6 py-4 text-white hover:bg-green-600 hover:text-white active:bg-green-700 focus:bg-green-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10"
+                  style={{ color: 'white !important', backgroundColor: 'transparent' }}
                 >
                   Creative
                 </button>
                 <button
                   onClick={() => handleClick("/contact")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-orange-600 hover:text-white active:bg-orange-700 focus:bg-orange-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700"
+                  className="w-full text-left px-6 py-4 text-white hover:bg-orange-600 hover:text-white active:bg-orange-700 focus:bg-orange-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10"
+                  style={{ color: 'white !important', backgroundColor: 'transparent' }}
                 >
                   Contact
                 </button>
                 <button
                   onClick={() => handleClick("/blog")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-indigo-600 hover:text-white active:bg-indigo-700 focus:bg-indigo-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700"
+                  className="w-full text-left px-6 py-4 text-white hover:bg-indigo-600 hover:text-white active:bg-indigo-700 focus:bg-indigo-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10"
+                  style={{ color: 'white !important', backgroundColor: 'transparent' }}
                 >
                   Blog
                 </button>
