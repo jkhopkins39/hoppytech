@@ -24,10 +24,16 @@ function App() {
                 <section className="flex flex-col md:flex-row bg-[#1a1a1a]">
                   <div className="w-full md:w-1/2 p-4 sm:p-4 md:p-8 flex flex-col justify-center order-2 md:order-1">
                     <h1 className="text-blue-400 bg-clip-text font-extrabold text-center md:text-left text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl select-none max-w-[90vw] md:max-w-none mx-auto mb-8">
-                      Hello, my name is Jeremy! I am an aspiring AI developer
-                      who loves to learn and build new things. Here you will
-                      find some information about me and what I can do.
+                      Hello, I'm Jeremy Hopkins - AI Developer & Computer Science Student
                     </h1>
+                    <p className="text-gray-300 text-center md:text-left text-lg md:text-xl mb-6 leading-relaxed">
+                      I'm a Computer Science student at Kennesaw State University specializing in Artificial Intelligence and Machine Learning. 
+                      I love building innovative solutions using React, Python, and modern web technologies.
+                    </p>
+                    <p className="text-gray-400 text-center md:text-left text-base md:text-lg mb-8 leading-relaxed">
+                      Explore my portfolio to see my projects in AI development, web applications, and software engineering. 
+                      Let's connect and build something amazing together!
+                    </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                       <button
                         onClick={() => navigate("/portfolio")}
@@ -47,8 +53,9 @@ function App() {
                   <div className="w-full md:w-1/2 h-[40vh] sm:h-[50vh] md:h-screen relative order-1 md:order-2">
                     <img
                       src="/Introduction.jpg"
-                      alt="A picture of me"
+                      alt="Jeremy Hopkins - AI Developer and Computer Science Student at Kennesaw State University"
                       className="h-full w-full object-cover"
+                      loading="eager"
                     />
                     <video
                       autoPlay

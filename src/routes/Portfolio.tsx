@@ -86,8 +86,18 @@ const Portfolio: React.FC = () => {
           transition={{ duration: 0.5 }}
           className="text-6xl font-bold mb-12 text-center bg-gradient-to-r from-[#ffbd62] to-[#ff8f62] bg-clip-text text-transparent"
         >
-          Portfolio
+          Jeremy Hopkins Portfolio
         </motion.h1>
+        
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-xl text-gray-300 text-center mb-12 max-w-4xl mx-auto leading-relaxed"
+        >
+          Explore my latest projects in web development, AI applications, and software engineering. 
+          Each project showcases my skills in React, Python, JavaScript, and modern development practices.
+        </motion.p>
 
         {/* Category Filter */}
         <motion.div

@@ -39,8 +39,18 @@ function About() {
           transition={{ duration: 0.5 }}
           className="text-6xl font-bold mb-12 text-center bg-gradient-to-r from-[#ffbd62] to-[#ff8f62] bg-clip-text text-transparent"
         >
-          About Me
+          About Jeremy Hopkins
         </motion.h1>
+        
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-xl text-gray-300 text-center mb-12 max-w-4xl mx-auto leading-relaxed"
+        >
+          I'm a passionate Computer Science student at Kennesaw State University with a focus on Artificial Intelligence and Machine Learning. 
+          I specialize in building innovative web applications, AI solutions, and software engineering projects using modern technologies.
+        </motion.p>
 
         {/* Decorative Divider */}
         <div className="relative py-8">
