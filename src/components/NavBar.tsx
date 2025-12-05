@@ -167,7 +167,7 @@ const NavBar = () => {
               {/* Menu Footer */}
               <div className="p-6 border-t-2 border-gray-600 bg-gray-800">
                 <p className="text-white text-sm text-center font-bold">
-                  © 2024 Jeremy Hopkins
+                  © 2025 Jeremy Hopkins
                 </p>
               </div>
             </div>

@@ -6,7 +6,7 @@ const ResumeSection: React.FC = () => {
 
   const downloadResume = (format: 'pdf' | 'docx') => {
     const filename = format === 'pdf' ? 'Jeremy_Hopkins_Resume.pdf' : 'Jeremy_Hopkins_Resume.docx';
-    const fileUrl = format === 'pdf' ? '/resume-pdf.pdf' : '/resume-docx.docx';
+    const fileUrl = format === 'pdf' ? '/resume.pdf' : '/resume-docx.docx';
     
     // Create a temporary link element
     const link = document.createElement('a');
@@ -21,10 +21,33 @@ const ResumeSection: React.FC = () => {
   };
 
   const shareOptions = [
-    { name: 'LinkedIn', icon: 'fab fa-linkedin', action: () => window.open('https://linkedin.com/share', '_blank') },
-    { name: 'Email', icon: 'fas fa-envelope', action: () => window.location.href = 'mailto:?subject=Resume&body=Check out my resume!' },
-    { name: 'Discord', icon: 'fab fa-discord', action: () => window.open('https://discord.com', '_blank') },
-    { name: 'Copy Link', icon: 'fas fa-link', action: () => navigator.clipboard.writeText(window.location.href) }
+    { 
+      name: 'LinkedIn', 
+      icon: 'fab fa-linkedin', 
+      action: () => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/resume.pdf')}`, '_blank') 
+    },
+    { 
+      name: 'Email', 
+      icon: 'fas fa-envelope', 
+      action: () => window.location.href = `mailto:?subject=Jeremy Hopkins Resume&body=Check out my resume: ${window.location.origin}/resume.pdf` 
+    },
+    { 
+      name: 'Discord', 
+      icon: 'fab fa-discord', 
+      action: () => {
+        navigator.clipboard.writeText(`${window.location.origin}/resume.pdf`);
+        window.open('https://discord.com', '_blank');
+        alert('Resume link copied to clipboard! You can now paste it in Discord.');
+      }
+    },
+    { 
+      name: 'Copy Link', 
+      icon: 'fas fa-link', 
+      action: () => {
+        navigator.clipboard.writeText(`${window.location.origin}/resume.pdf`);
+        alert('Resume link copied to clipboard!');
+      }
+    }
   ];
 
   return (
@@ -110,7 +133,7 @@ const ResumeSection: React.FC = () => {
               onClick={e => e.stopPropagation()}
             >
               <iframe
-                src="/resume-pdf.pdf"
+                src="/resume.pdf"
                 className="w-full h-full"
                 title="Resume PDF"
               />
