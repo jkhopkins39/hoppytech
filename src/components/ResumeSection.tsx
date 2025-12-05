@@ -6,7 +6,7 @@ const ResumeSection: React.FC = () => {
 
   const downloadResume = (format: 'pdf' | 'docx') => {
     const filename = format === 'pdf' ? 'Jeremy_Hopkins_Resume.pdf' : 'Jeremy_Hopkins_Resume.docx';
-    const fileUrl = format === 'pdf' ? '/resume.pdf' : '/resume-docx.docx';
+    const fileUrl = format === 'pdf' ? '/resume.pdf' : '/resume.docx';
     
     // Create a temporary link element
     const link = document.createElement('a');
