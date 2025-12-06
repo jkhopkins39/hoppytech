@@ -21,6 +21,7 @@ const Portfolio: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAddingProject, setIsAddingProject] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const initialProjects: Project[] = [
     {
@@ -103,23 +104,50 @@ const Portfolio: React.FC = () => {
     e.preventDefault();
     if (!newProject.title || !newProject.description) return;
 
-    const project: Project = {
-      id: Date.now(),
-      title: newProject.title,
-      description: newProject.description,
-      shortDescription: newProject.shortDescription || '',
-      image: newProject.image || '/placeholder-image.jpg', // Fallback
-      imageWebP: newProject.image,
-      imageFallback: newProject.image,
-      technologies: newProject.technologies || [],
-      category: newProject.category as any,
-      liveUrl: newProject.liveUrl,
-      repoUrl: newProject.repoUrl
-    };
+    if (editingId) {
+      // Edit existing project
+      const updatedProjects = projects.map(p => {
+        if (p.id === editingId) {
+          return {
+            ...p,
+            title: newProject.title!,
+            description: newProject.description!,
+            shortDescription: newProject.shortDescription || '',
+            image: newProject.image || '/placeholder-image.jpg',
+            imageWebP: newProject.image,
+            imageFallback: newProject.image,
+            technologies: newProject.technologies || [],
+            category: newProject.category as any,
+            liveUrl: newProject.liveUrl,
+            repoUrl: newProject.repoUrl
+          };
+        }
+        return p;
+      });
+      
+      setProjects(updatedProjects);
+      localStorage.setItem('portfolioProjects', JSON.stringify(updatedProjects));
+      setEditingId(null);
+    } else {
+      // Add new project
+      const project: Project = {
+        id: Date.now(),
+        title: newProject.title!,
+        description: newProject.description!,
+        shortDescription: newProject.shortDescription || '',
+        image: newProject.image || '/placeholder-image.jpg',
+        imageWebP: newProject.image,
+        imageFallback: newProject.image,
+        technologies: newProject.technologies || [],
+        category: newProject.category as any,
+        liveUrl: newProject.liveUrl,
+        repoUrl: newProject.repoUrl
+      };
 
-    const updatedProjects = [project, ...projects];
-    setProjects(updatedProjects);
-    localStorage.setItem('portfolioProjects', JSON.stringify(updatedProjects));
+      const updatedProjects = [project, ...projects];
+      setProjects(updatedProjects);
+      localStorage.setItem('portfolioProjects', JSON.stringify(updatedProjects));
+    }
     
     // Reset form
     setNewProject({
@@ -133,6 +161,22 @@ const Portfolio: React.FC = () => {
       repoUrl: ''
     });
     setIsAddingProject(false);
+  };
+
+  const handleEditProject = (project: Project) => {
+    setNewProject({
+      title: project.title,
+      description: project.description,
+      shortDescription: project.shortDescription,
+      image: project.image,
+      technologies: project.technologies,
+      category: project.category,
+      liveUrl: project.liveUrl || '',
+      repoUrl: project.repoUrl || ''
+    });
+    setEditingId(project.id);
+    setIsAddingProject(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteProject = (id: number) => {
@@ -202,7 +246,24 @@ const Portfolio: React.FC = () => {
         {isLoggedIn && (
           <div className="mb-8 text-center">
             <button
-              onClick={() => setIsAddingProject(!isAddingProject)}
+              onClick={() => {
+                if (isAddingProject) {
+                  setIsAddingProject(false);
+                  setEditingId(null);
+                  setNewProject({
+                    title: '',
+                    description: '',
+                    shortDescription: '',
+                    image: '',
+                    technologies: [],
+                    category: 'web',
+                    liveUrl: '',
+                    repoUrl: ''
+                  });
+                } else {
+                  setIsAddingProject(true);
+                }
+              }}
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold shadow-lg transition-all transform hover:scale-105"
             >
               {isAddingProject ? 'Cancel' : 'Add New Project'}
@@ -210,7 +271,7 @@ const Portfolio: React.FC = () => {
           </div>
         )}
 
-        {/* Add Project Form */}
+        {/* Add/Edit Project Form */}
         <AnimatePresence>
           {isLoggedIn && isAddingProject && (
             <motion.div
@@ -219,7 +280,9 @@ const Portfolio: React.FC = () => {
               exit={{ height: 0, opacity: 0 }}
               className="mb-12 bg-gray-900 p-8 rounded-xl shadow-2xl overflow-hidden border border-gray-800"
             >
-              <h2 className="text-2xl font-bold mb-6 text-white">Add New Project</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">
+                {editingId ? 'Edit Project' : 'Add New Project'}
+              </h2>
               <form onSubmit={handleAddProject} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -329,7 +392,7 @@ const Portfolio: React.FC = () => {
                   type="submit"
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 rounded-lg shadow-lg transition-all transform hover:scale-[1.02]"
                 >
-                  Save Project
+                  {editingId ? 'Update Project' : 'Save Project'}
                 </button>
               </form>
             </motion.div>
@@ -379,16 +442,28 @@ const Portfolio: React.FC = () => {
             >
               <div className="relative h-48 overflow-hidden">
                 {isLoggedIn && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteProject(project.id);
-                    }}
-                    className="absolute top-2 right-2 z-20 bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition-colors"
-                    title="Delete Project"
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
+                  <div className="absolute top-2 right-2 z-20 flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditProject(project);
+                      }}
+                      className="bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+                      title="Edit Project"
+                    >
+                      <i className="fas fa-edit"></i>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteProject(project.id);
+                      }}
+                      className="bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition-colors"
+                      title="Delete Project"
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  </div>
                 )}
                 <picture>
                   <source srcSet={project.imageWebP} type="image/webp" />
