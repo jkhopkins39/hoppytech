@@ -132,14 +132,38 @@ const ResumeSection: React.FC = () => {
               className="relative max-w-7xl w-full h-[95vh] bg-white rounded-lg shadow-2xl overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <iframe
-                src="/resume.pdf"
+              <object
+                data="/resume.pdf"
+                type="application/pdf"
                 className="w-full h-full"
-                title="Resume PDF"
-              />
+              >
+                <div className="flex flex-col items-center justify-center h-full text-gray-800 bg-gray-50">
+                  <p className="mb-4 text-lg">It appears your browser cannot display the PDF directly.</p>
+                  <a 
+                    href="/resume.pdf" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-lg"
+                  >
+                    Click here to view PDF
+                  </a>
+                </div>
+              </object>
+
+              {/* Open in New Tab Button */}
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute top-2 sm:top-4 left-2 sm:left-4 text-white bg-black bg-opacity-75 rounded-lg px-4 py-2 hover:bg-opacity-100 transition-all flex items-center gap-2 z-50"
+              >
+                <i className="fas fa-external-link-alt text-sm"></i>
+                <span className="text-sm font-medium hidden sm:inline">Open in New Tab</span>
+              </a>
+
               <button
                 onClick={() => setIsExpanded(false)}
-                className="absolute top-2 sm:top-4 right-2 sm:right-4 text-white bg-black bg-opacity-75 rounded-full p-2 sm:p-3 hover:bg-opacity-100 transition-all flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10"
+                className="absolute top-2 sm:top-4 right-2 sm:right-4 text-white bg-black bg-opacity-75 rounded-full p-2 sm:p-3 hover:bg-opacity-100 transition-all flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 z-50"
               >
                 <i className="fas fa-times text-lg sm:text-xl"></i>
               </button>
