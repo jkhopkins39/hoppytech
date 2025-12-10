@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles can be added below */
+
+:root {
+  font-family: OCR A Std, monospace;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #000000;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  min-width: 100vw;
+  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: #000000;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #000000;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+}
+
+/* Prevent hover effects on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:bg-blue-500:hover {
+    background-color: transparent !important;
+  }
+  
+  .hover\:bg-blue-600:hover {
+    background-color: transparent !important;
+  }
+  
+  .hover\:bg-red-600:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Ensure light background hover effects work on touch devices */
+  .hover\:bg-blue-50:hover {
+    background-color: rgb(239 246 255) !important;
+  }
+  
+  .hover\:bg-purple-50:hover {
+    background-color: rgb(250 245 255) !important;
+  }
+  
+  .hover\:bg-green-50:hover {
+    background-color: rgb(240 253 244) !important;
+  }
+  
+  .hover\:bg-orange-50:hover {
+    background-color: rgb(255 247 237) !important;
+  }
+  
+  .hover\:bg-indigo-50:hover {
+    background-color: rgb(238 242 255) !important;
+  }
+}
+
+/* Mobile menu improvements */
+@media (max-width: 640px) {
+  /* Ensure menu items are easily tappable */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent body scroll when menu is open */
+  body.menu-open {
+    overflow: hidden;
+  }
+}
+
+/* Smooth transitions for mobile menu */
+.mobile-menu-enter {
+  transform: translateX(100%);
+}
+
+.mobile-menu-enter-active {
+  transform: translateX(0%);
+  transition: transform 300ms ease-in-out;
+}
+
+.mobile-menu-exit {
+  transform: translateX(0%);
+}
+
+.mobile-menu-exit-active {
+  transform: translateX(100%);
+  transition: transform 300ms ease-in-out;
+}
+
+/* Dropdown styles */
+.dropdown-container.expanded .dropdown-content {
+  height: 8rem;
+}
+
+.dropdown-container.expanded .fa-chevron-down {
+  transform: rotate(180deg);
+}
+

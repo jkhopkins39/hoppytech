@@ -11,21 +11,21 @@ function About() {
       period: "2022-2025",
       description:
         "Currently pursuing a degree in Computer Science with a focus in Artificial Intelligence. I have worked on the vast majority of my projects during my tenure at KSU, which you can find in my portfolio.",
-      image: "/marietta-campus.jpg", // You'll need to add this image to your public folder
+      image: "/images/education/marietta-campus.jpg",
     },
     {
       title: "University of West Georgia",
       period: "2021-2022",
       description:
         "During my time at UWG I gained experience in test-driven development, object-oriented programming, and software design. I also worked in the catering department and became very familiar with the facilities there.",
-      image: "/UWG.jpg", // You'll need to add this image to your public folder
+      image: "/images/education/UWG.jpg",
     },
     {
       title: "Bremen High School",
       period: "2017-2021",
       description:
         "I graduated from Bremen High School in 2021. I was a member of the National Honor Society and the brass captain of the BHS Marching Blue Devils. I also worked in the Fine Arts Center as a sound and lighting technician.",
-      image: "/BHS.png", // You'll need to add this image to your public folder
+      image: "/images/education/BHS.png",
     },
     // Add more education entries as needed
   ];

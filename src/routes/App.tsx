@@ -64,7 +64,7 @@ function App() {
                       playsInline
                       className="absolute top-0 left-0 h-full w-full object-cover mix-blend-plus-lighter"
                     >
-                      <source src="/output.webm" type="video/webm" />
+                      <source src="/video/output.webm" type="video/webm" />
                     </video>
                   </div>
                 </section>
@@ -85,7 +85,7 @@ function App() {
                             className="hover:opacity-80 transition-opacity"
                           >
                             <img
-                              src="/Github-icon.png"
+                              src="/images/social/Github-icon.png"
                               alt="GitHub"
                               className="w-6 h-6 md:w-8 md:h-8"
                             />
@@ -97,7 +97,7 @@ function App() {
                             className="hover:opacity-80 transition-opacity"
                           >
                             <img
-                              src="/LinkedIn_logo_initials.png"
+                              src="/images/social/LinkedIn_logo_initials.png"
                               alt="LinkedIn"
                               className="w-6 h-6 md:w-8 md:h-8"
                             />
@@ -109,7 +109,7 @@ function App() {
                             className="hover:opacity-80 transition-opacity"
                           >
                             <img
-                              src="/instagram-logo.png"
+                              src="/images/social/instagram-logo.png"
                               alt="Instagram"
                               className="w-6 h-6 md:w-8 md:h-8"
                             />
@@ -121,7 +121,7 @@ function App() {
                             className="hover:opacity-80 transition-opacity"
                           >
                             <img
-                              src="/facebook-logo.png"
+                              src="/images/social/facebook-logo.png"
                               alt="Facebook"
                               className="w-6 h-6 md:w-8 md:h-8"
                             />

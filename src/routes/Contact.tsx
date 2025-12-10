@@ -7,28 +7,28 @@ const Contact: React.FC = () => {
     {
       name: 'Instagram',
       icon: 'fab fa-instagram',
-      logo: '/instagram-logo.png',
+      logo: '/images/social/instagram-logo.png',
       handle: '@jeremykhopkins',
       url: 'https://instagram.com/jeremykhopkins'
     },
     {
       name: 'Facebook',
       icon: 'fab fa-facebook',
-      logo: '/facebook-logo.png',
+      logo: '/images/social/facebook-logo.png',
       handle: 'Jeremy Hopkins',
       url: 'https://facebook.com/jeremy.hopkins.94695'
     },
     {
       name: 'LinkedIn',
       icon: 'fab fa-linkedin',
-      logo: '/linkedin-logo.png',
+      logo: '/images/social/linkedin-logo.png',
       handle: 'jeremy-hopkins-160001275',
       url: 'https://www.linkedin.com/in/jeremy-hopkins-160001275'
     },
     {
       name: 'GitHub',
       icon: 'fab fa-github',
-      logo: '/github-logo.png',
+      logo: '/images/social/github-logo.png',
       handle: 'jkhopkins39',
       url: 'https://github.com/jkhopkins39'
     }

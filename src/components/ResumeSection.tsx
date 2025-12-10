@@ -6,7 +6,7 @@ const ResumeSection: React.FC = () => {
 
   const downloadResume = (format: 'pdf' | 'docx') => {
     const filename = format === 'pdf' ? 'Jeremy_Hopkins_Resume.pdf' : 'Jeremy_Hopkins_Resume.docx';
-    const fileUrl = format === 'pdf' ? '/resume.pdf' : '/resume.docx';
+    const fileUrl = format === 'pdf' ? '/documents/resume.pdf' : '/documents/resume.docx';
     
     // Create a temporary link element
     const link = document.createElement('a');
@@ -24,18 +24,18 @@ const ResumeSection: React.FC = () => {
     { 
       name: 'LinkedIn', 
       icon: 'fab fa-linkedin', 
-      action: () => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/resume.pdf')}`, '_blank') 
+      action: () => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/documents/resume.pdf')}`, '_blank') 
     },
     { 
       name: 'Email', 
       icon: 'fas fa-envelope', 
-      action: () => window.location.href = `mailto:?subject=Jeremy Hopkins Resume&body=Check out my resume: ${window.location.origin}/resume.pdf` 
+      action: () => window.location.href = `mailto:?subject=Jeremy Hopkins Resume&body=Check out my resume: ${window.location.origin}/documents/resume.pdf` 
     },
     { 
       name: 'Discord', 
       icon: 'fab fa-discord', 
       action: () => {
-        navigator.clipboard.writeText(`${window.location.origin}/resume.pdf`);
+        navigator.clipboard.writeText(`${window.location.origin}/documents/resume.pdf`);
         window.open('https://discord.com', '_blank');
         alert('Resume link copied to clipboard! You can now paste it in Discord.');
       }
@@ -44,7 +44,7 @@ const ResumeSection: React.FC = () => {
       name: 'Copy Link', 
       icon: 'fas fa-link', 
       action: () => {
-        navigator.clipboard.writeText(`${window.location.origin}/resume.pdf`);
+        navigator.clipboard.writeText(`${window.location.origin}/documents/resume.pdf`);
         alert('Resume link copied to clipboard!');
       }
     }
@@ -62,7 +62,7 @@ const ResumeSection: React.FC = () => {
         >
           <div className="aspect-[3/4] relative">
             <img 
-              src="/resume-preview.png" 
+              src="/documents/resume-preview.png" 
               alt="Resume Preview" 
               className="w-full h-full object-cover"
             />
@@ -133,14 +133,14 @@ const ResumeSection: React.FC = () => {
               onClick={e => e.stopPropagation()}
             >
               <object
-                data="/resume.pdf"
+                data="/documents/resume.pdf"
                 type="application/pdf"
                 className="w-full h-full"
               >
                 <div className="flex flex-col items-center justify-center h-full text-gray-800 bg-gray-50">
                   <p className="mb-4 text-lg">It appears your browser cannot display the PDF directly.</p>
                   <a 
-                    href="/resume.pdf" 
+                    href="/documents/resume.pdf" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-lg"
@@ -152,7 +152,7 @@ const ResumeSection: React.FC = () => {
 
               {/* Open in New Tab Button */}
               <a
-                href="/resume.pdf"
+                href="/documents/resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="absolute top-2 sm:top-4 left-2 sm:left-4 text-white bg-black bg-opacity-75 rounded-lg px-4 py-2 hover:bg-opacity-100 transition-all flex items-center gap-2 z-50"

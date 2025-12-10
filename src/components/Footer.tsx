@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
                 className="hover:opacity-80 transition-opacity"
               >
                 <img
-                  src="/Github-icon.png"
+                  src="/images/social/Github-icon.png"
                   alt="GitHub"
                   className="w-6 h-6 md:w-8 md:h-8"
                 />
@@ -81,7 +81,7 @@ const Footer: React.FC = () => {
                 className="hover:opacity-80 transition-opacity"
               >
                 <img
-                  src="/LinkedIn_logo_initials.png"
+                  src="/images/social/LinkedIn_logo_initials.png"
                   alt="LinkedIn"
                   className="w-6 h-6 md:w-8 md:h-8"
                 />
@@ -93,7 +93,7 @@ const Footer: React.FC = () => {
                 className="hover:opacity-80 transition-opacity"
               >
                 <img
-                  src="/instagram-logo.png"
+                  src="/images/social/instagram-logo.png"
                   alt="Instagram"
                   className="w-6 h-6 md:w-8 md:h-8"
                 />
@@ -105,7 +105,7 @@ const Footer: React.FC = () => {
                 className="hover:opacity-80 transition-opacity"
               >
                 <img
-                  src="/facebook-logo.png"
+                  src="/images/social/facebook-logo.png"
                   alt="Facebook"
                   className="w-6 h-6 md:w-8 md:h-8"
                 />
