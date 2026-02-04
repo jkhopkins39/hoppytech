@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Footer from '../components/Footer';
+
+interface ContactSubmission {
+  id: string;
+  email: string;
+  message: string;
+  date: string;
+  read: boolean;
+}
 
 const Contact: React.FC = () => {
   // Honeypot fields - should remain empty
@@ -8,6 +16,25 @@ const Contact: React.FC = () => {
   const [honeypot2, setHoneypot2] = useState("");
   const [formLoadTime] = useState(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const storeSubmission = (email: string, message: string) => {
+    const submission: ContactSubmission = {
+      id: Date.now().toString(),
+      email,
+      message,
+      date: new Date().toISOString(),
+      read: false
+    };
+
+    const existingSubmissions = localStorage.getItem('contactSubmissions');
+    const submissions: ContactSubmission[] = existingSubmissions 
+      ? JSON.parse(existingSubmissions) 
+      : [];
+    
+    submissions.unshift(submission);
+    localStorage.setItem('contactSubmissions', JSON.stringify(submissions));
+  };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     // Honeypot validation - if filled, it's likely a bot
@@ -28,6 +55,16 @@ const Contact: React.FC = () => {
       console.log("Bot detected via timing");
       alert("Please take your time filling out the form.");
       return;
+    }
+
+    // Store submission locally before sending to web3forms
+    if (formRef.current) {
+      const formData = new FormData(formRef.current);
+      const email = formData.get('email') as string;
+      const message = formData.get('message') as string;
+      if (email && message) {
+        storeSubmission(email, message);
+      }
     }
 
     setIsSubmitting(true);
@@ -98,6 +135,7 @@ const Contact: React.FC = () => {
           className="max-w-xl mx-auto mb-10"
         >
           <form 
+            ref={formRef}
             action="https://api.web3forms.com/submit"
             method="POST"
             className="space-y-5"

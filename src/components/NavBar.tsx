@@ -5,7 +5,27 @@ import { useState, useEffect, useRef } from "react";
 const NavBar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Check login status
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const loggedIn = localStorage.getItem('blogAdminLoggedIn');
+      setIsLoggedIn(loggedIn === 'true');
+    };
+
+    checkLoginStatus();
+    // Listen for storage changes (e.g., login/logout in another tab)
+    window.addEventListener('storage', checkLoginStatus);
+    // Also check periodically for same-tab changes
+    const interval = setInterval(checkLoginStatus, 1000);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      clearInterval(interval);
+    };
+  }, []);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -155,6 +175,18 @@ const NavBar = () => {
                 >
                   Contact
                 </button>
+                {isLoggedIn && (
+                  <button
+                    onClick={() => handleClick("/dashboard")}
+                    className="w-full text-left px-6 py-4 text-white hover:bg-emerald-600 hover:text-white active:bg-emerald-700 focus:bg-emerald-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10 flex items-center gap-3"
+                    style={{ color: 'white !important', backgroundColor: 'transparent' }}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                    </svg>
+                    Dashboard
+                  </button>
+                )}
               </div>
 
               {/* Menu Footer */}

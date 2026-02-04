@@ -4,6 +4,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import About from "./About";
 import Blog from "./Blog";
 import Contact from "./Contact";
+import Dashboard from "./Dashboard";
 import Portfolio from "./Portfolio";
 import ThankYou from "./ThankYou";
 import { socialLinks, contactInfo } from "../config/socialLinks";
@@ -181,6 +182,7 @@ function App() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/thank-you" element={<ThankYou />} />
         </Routes>
       </main>
