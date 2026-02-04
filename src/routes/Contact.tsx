@@ -1,8 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Footer from '../components/Footer';
 
 const Contact: React.FC = () => {
+  // Honeypot fields - should remain empty
+  const [honeypot1, setHoneypot1] = useState("");
+  const [honeypot2, setHoneypot2] = useState("");
+  const [formLoadTime] = useState(Date.now());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // Honeypot validation - if filled, it's likely a bot
+    if (honeypot1 || honeypot2) {
+      e.preventDefault();
+      console.log("Bot detected via honeypot");
+      // Redirect to thank you page anyway to not alert the bot
+      window.location.href = import.meta.env.DEV 
+        ? 'http://localhost:5173/thank-you'
+        : 'https://jkhopkins39.github.io/thank-you';
+      return;
+    }
+    
+    // Time-based validation - form submitted too quickly (less than 3 seconds)
+    const timeTaken = Date.now() - formLoadTime;
+    if (timeTaken < 3000) {
+      e.preventDefault();
+      console.log("Bot detected via timing");
+      alert("Please take your time filling out the form.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    // Form will submit normally to web3forms
+  };
   const socialLinks = [
     {
       name: 'Instagram',
@@ -71,10 +101,36 @@ const Contact: React.FC = () => {
             action="https://api.web3forms.com/submit"
             method="POST"
             className="space-y-5"
+            onSubmit={handleFormSubmit}
           >
             <input type="hidden" name="access_key" value="46cae387-addf-453a-a32f-6464199035c6" />
             <input type="hidden" name="subject" value="New Contact Form Submission" />
             <input type="hidden" name="redirect" value={redirectUrl} />
+            
+            {/* Honeypot fields - hidden from users, visible to bots */}
+            <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true">
+              <label htmlFor="contact_website">Leave this field empty</label>
+              <input
+                type="text"
+                id="contact_website"
+                name="contact_website"
+                value={honeypot1}
+                onChange={(e) => setHoneypot1(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+              <label htmlFor="contact_fax">Fax (do not fill)</label>
+              <input
+                type="text"
+                id="contact_fax"
+                name="contact_fax"
+                value={honeypot2}
+                onChange={(e) => setHoneypot2(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
             <div>
               <label className="block text-base mb-2">To:</label>
               <input
@@ -108,9 +164,10 @@ const Contact: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               type="submit"
-              className="w-full py-3.5 rounded-lg font-medium text-base transition-transform bg-blue-500 hover:bg-blue-600"
+              disabled={isSubmitting}
+              className="w-full py-3.5 rounded-lg font-medium text-base transition-transform bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Send Message
+              {isSubmitting ? 'Sending...' : 'Send Message'}
             </motion.button>
           </form>
         </motion.div>

@@ -142,11 +142,11 @@ const NavBar = () => {
                   Portfolio
                 </button>
                 <button
-                  onClick={() => handleClick("/creative")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-green-600 hover:text-white active:bg-green-700 focus:bg-green-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10"
+                  onClick={() => handleClick("/blog")}
+                  className="w-full text-left px-6 py-4 text-white hover:bg-indigo-600 hover:text-white active:bg-indigo-700 focus:bg-indigo-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10"
                   style={{ color: 'white !important', backgroundColor: 'transparent' }}
                 >
-                  Creative
+                  Blog
                 </button>
                 <button
                   onClick={() => handleClick("/contact")}
@@ -155,19 +155,12 @@ const NavBar = () => {
                 >
                   Contact
                 </button>
-                <button
-                  onClick={() => handleClick("/blog")}
-                  className="w-full text-left px-6 py-4 text-white hover:bg-indigo-600 hover:text-white active:bg-indigo-700 focus:bg-indigo-600 focus:text-white transition-all duration-200 font-bold text-lg border-b border-gray-700 relative z-10"
-                  style={{ color: 'white !important', backgroundColor: 'transparent' }}
-                >
-                  Blog
-                </button>
               </div>
 
               {/* Menu Footer */}
               <div className="p-6 border-t-2 border-gray-600 bg-gray-800">
                 <p className="text-white text-sm text-center font-bold">
-                  © 2025 Jeremy Hopkins
+                  © 2026 Jeremy Hopkins
                 </p>
               </div>
             </div>

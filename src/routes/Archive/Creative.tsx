@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Footer from '../components/Footer';
+import Footer from '../../components/Footer';
 
 interface Photo {
   id: number;

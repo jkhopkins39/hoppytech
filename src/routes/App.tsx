@@ -3,7 +3,6 @@ import Chatbot from "../components/Chatbot";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import About from "./About";
 import Blog from "./Blog";
-import Creative from "./Creative";
 import Contact from "./Contact";
 import Portfolio from "./Portfolio";
 import ThankYou from "./ThankYou";
@@ -180,9 +179,8 @@ function App() {
           />
           <Route path="/about" element={<About />} />
           <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/creative" element={<Creative />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/thank-you" element={<ThankYou />} />
         </Routes>
       </main>
