@@ -123,49 +123,49 @@ const Blog: React.FC = () => {
     setExpandedPostId(expandedPostId === id ? null : id);
   };
 
-  // Card gradient themes for variety
+  // Card gradient themes for variety (matching navbar: red-500, indigo-700, blue-500)
   const cardThemes = [
     {
-      gradient: 'from-violet-600/20 via-fuchsia-600/10 to-pink-600/20',
-      border: 'border-violet-500/30 hover:border-violet-400/50',
-      accent: 'from-violet-500 to-fuchsia-500',
-      glow: 'violet-500/30'
+      gradient: 'from-blue-600/20 via-indigo-600/10 to-indigo-600/20',
+      border: 'border-blue-500/30 hover:border-blue-400/50',
+      accent: 'from-blue-500 to-indigo-500',
+      glow: 'blue-500/30'
     },
     {
-      gradient: 'from-cyan-600/20 via-blue-600/10 to-indigo-600/20',
-      border: 'border-cyan-500/30 hover:border-cyan-400/50',
-      accent: 'from-cyan-500 to-blue-500',
-      glow: 'cyan-500/30'
+      gradient: 'from-indigo-600/20 via-purple-600/10 to-red-600/20',
+      border: 'border-indigo-500/30 hover:border-indigo-400/50',
+      accent: 'from-indigo-500 to-red-500',
+      glow: 'indigo-500/30'
     },
     {
-      gradient: 'from-emerald-600/20 via-teal-600/10 to-cyan-600/20',
-      border: 'border-emerald-500/30 hover:border-emerald-400/50',
-      accent: 'from-emerald-500 to-teal-500',
-      glow: 'emerald-500/30'
+      gradient: 'from-red-600/20 via-rose-600/10 to-pink-600/20',
+      border: 'border-red-500/30 hover:border-red-400/50',
+      accent: 'from-red-500 to-rose-500',
+      glow: 'red-500/30'
     },
     {
-      gradient: 'from-orange-600/20 via-amber-600/10 to-yellow-600/20',
-      border: 'border-orange-500/30 hover:border-orange-400/50',
-      accent: 'from-orange-500 to-amber-500',
-      glow: 'orange-500/30'
+      gradient: 'from-blue-600/20 via-sky-600/10 to-cyan-600/20',
+      border: 'border-blue-500/30 hover:border-sky-400/50',
+      accent: 'from-blue-500 to-sky-500',
+      glow: 'blue-500/30'
     },
     {
-      gradient: 'from-rose-600/20 via-pink-600/10 to-red-600/20',
-      border: 'border-rose-500/30 hover:border-rose-400/50',
-      accent: 'from-rose-500 to-pink-500',
-      glow: 'rose-500/30'
+      gradient: 'from-indigo-600/20 via-violet-600/10 to-purple-600/20',
+      border: 'border-indigo-500/30 hover:border-violet-400/50',
+      accent: 'from-indigo-500 to-violet-500',
+      glow: 'indigo-500/30'
     },
   ];
 
   const getCardTheme = (index: number) => cardThemes[index % cardThemes.length];
 
   const tagColors = [
-    'bg-violet-500/20 text-violet-300 border-violet-400/30',
-    'bg-cyan-500/20 text-cyan-300 border-cyan-400/30',
-    'bg-emerald-500/20 text-emerald-300 border-emerald-400/30',
-    'bg-amber-500/20 text-amber-300 border-amber-400/30',
-    'bg-rose-500/20 text-rose-300 border-rose-400/30',
     'bg-blue-500/20 text-blue-300 border-blue-400/30',
+    'bg-indigo-500/20 text-indigo-300 border-indigo-400/30',
+    'bg-red-500/20 text-red-300 border-red-400/30',
+    'bg-sky-500/20 text-sky-300 border-sky-400/30',
+    'bg-violet-500/20 text-violet-300 border-violet-400/30',
+    'bg-rose-500/20 text-rose-300 border-rose-400/30',
   ];
 
   const getTagColor = (index: number) => tagColors[index % tagColors.length];
@@ -175,9 +175,9 @@ const Blog: React.FC = () => {
       {/* Animated background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {/* Mesh gradient orbs */}
-        <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-violet-600/20 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="absolute top-1/3 right-0 w-[600px] h-[600px] bg-cyan-600/20 rounded-full blur-[120px] translate-x-1/3 animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
-        <div className="absolute bottom-0 left-1/3 w-[700px] h-[700px] bg-fuchsia-600/15 rounded-full blur-[130px] translate-y-1/2 animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute top-1/3 right-0 w-[600px] h-[600px] bg-red-600/20 rounded-full blur-[120px] translate-x-1/3 animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+        <div className="absolute bottom-0 left-1/3 w-[700px] h-[700px] bg-indigo-600/15 rounded-full blur-[130px] translate-y-1/2 animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
         
         {/* Grid pattern overlay */}
         <div 
@@ -222,7 +222,7 @@ const Blog: React.FC = () => {
                 The
               </span>
               <br />
-              <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
+              <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-red-400 bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
                 Blog
               </span>
             </h1>
@@ -286,10 +286,10 @@ const Blog: React.FC = () => {
               className="mb-16"
             >
               <div className="max-w-3xl mx-auto relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-violet-500/50 via-fuchsia-500/50 to-pink-500/50 rounded-3xl blur-xl opacity-30" />
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/50 via-indigo-500/50 to-red-500/50 rounded-3xl blur-xl opacity-30" />
                 <div className="relative bg-[#0a0a0f]/90 backdrop-blur-xl rounded-3xl p-8 md:p-10 border border-white/10">
                   <h2 className="text-3xl font-bold mb-8 flex items-center gap-4">
-                    <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+                    <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
                       <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
@@ -305,7 +305,7 @@ const Blog: React.FC = () => {
                         type="text"
                         value={postForm.title}
                         onChange={(e) => setPostForm({...postForm, title: e.target.value})}
-                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all text-white text-lg placeholder-gray-600"
+                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-white text-lg placeholder-gray-600"
                         placeholder="Enter an engaging title..."
                         required
                       />
@@ -315,7 +315,7 @@ const Blog: React.FC = () => {
                       <textarea
                         value={postForm.excerpt}
                         onChange={(e) => setPostForm({...postForm, excerpt: e.target.value})}
-                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all text-white placeholder-gray-600 resize-none"
+                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-white placeholder-gray-600 resize-none"
                         rows={2}
                         placeholder="A brief summary that hooks readers..."
                         required
@@ -326,7 +326,7 @@ const Blog: React.FC = () => {
                       <textarea
                         value={postForm.content}
                         onChange={(e) => setPostForm({...postForm, content: e.target.value})}
-                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all text-white placeholder-gray-600 resize-none font-mono text-sm leading-relaxed"
+                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-white placeholder-gray-600 resize-none font-mono text-sm leading-relaxed"
                         rows={14}
                         placeholder="Write your post content here..."
                         required
@@ -338,14 +338,14 @@ const Blog: React.FC = () => {
                         type="text"
                         value={postForm.tags}
                         onChange={(e) => setPostForm({...postForm, tags: e.target.value})}
-                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all text-white placeholder-gray-600"
+                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-white placeholder-gray-600"
                         placeholder="AI, React, Web Development (comma-separated)"
                       />
                     </div>
                     <div className="flex gap-4 pt-6">
                       <button
                         type="submit"
-                        className="flex-1 py-4 bg-gradient-to-r from-violet-500 to-fuchsia-600 rounded-xl font-bold text-white text-lg shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all duration-300 hover:scale-[1.02]"
+                        className="flex-1 py-4 bg-gradient-to-r from-blue-500 via-indigo-600 to-red-500 rounded-xl font-bold text-white text-lg shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-[1.02]"
                       >
                         {editingPostId ? 'Save Changes' : 'Publish Post'}
                       </button>
@@ -374,8 +374,8 @@ const Blog: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-center py-24"
             >
-              <div className="w-32 h-32 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border border-violet-500/20 flex items-center justify-center">
-                <svg className="w-16 h-16 text-violet-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-32 h-32 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-indigo-500/20 flex items-center justify-center">
+                <svg className="w-16 h-16 text-indigo-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                 </svg>
               </div>
@@ -384,7 +384,7 @@ const Blog: React.FC = () => {
               {isLoggedIn && (
                 <button
                   onClick={() => setIsCreatingPost(true)}
-                  className="px-8 py-4 bg-gradient-to-r from-violet-500 to-fuchsia-600 rounded-xl font-bold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 bg-gradient-to-r from-blue-500 via-indigo-600 to-red-500 rounded-xl font-bold text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-105"
                 >
                   Write the first post
                 </button>
@@ -438,7 +438,7 @@ const Blog: React.FC = () => {
                               {/* Meta info */}
                               <div className="flex flex-wrap items-center gap-5 text-sm">
                                 <span className="flex items-center gap-2 text-gray-400">
-                                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-[10px] font-bold text-white">
+                                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-[10px] font-bold text-white">
                                     JH
                                   </div>
                                   {post.author}

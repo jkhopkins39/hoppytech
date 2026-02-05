@@ -137,12 +137,6 @@ const Footer: React.FC = () => {
                   {contactInfo.phone}
                 </a>
               </li>
-              <li className="flex items-center space-x-2">
-                <i className="fas fa-map-marker-alt"></i>
-                <span className="text-sm md:text-base">
-                  {contactInfo.location}
-                </span>
-              </li>
             </ul>
           </div>
 

@@ -7,6 +7,5 @@ export const socialLinks = {
 
 export const contactInfo = {
   email: "jeremyyhopkins@gmail.com",
-  phone: "770-686-6503",
-  location: "Atlanta, GA // USA"
+  phone: "770-686-6503"
 }; 
