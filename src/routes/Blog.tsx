@@ -19,6 +19,9 @@ const Blog: React.FC = () => {
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [postForm, setPostForm] = useState({
     title: "",
     content: "",
@@ -40,11 +43,23 @@ const Blog: React.FC = () => {
     });
   };
 
+  // Fetch posts from JSON file
   useEffect(() => {
-    const savedPosts = localStorage.getItem('blogPosts');
-    if (savedPosts) {
-      setBlogPosts(JSON.parse(savedPosts));
-    }
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('/data/blogPosts.json');
+        if (response.ok) {
+          const posts = await response.json();
+          setBlogPosts(posts);
+        }
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
 
     const loggedIn = localStorage.getItem('blogAdminLoggedIn');
     if (loggedIn === 'true') {
@@ -52,8 +67,11 @@ const Blog: React.FC = () => {
     }
   }, []);
 
-  const handleCreatePost = (e: React.FormEvent) => {
+  const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsPublishing(true);
+    setStatusMessage(null);
+
     const post: BlogPost = {
       id: Date.now().toString(),
       title: postForm.title,
@@ -65,35 +83,71 @@ const Blog: React.FC = () => {
       readTime: calculateReadTime(postForm.content)
     };
 
-    const updatedPosts = [post, ...blogPosts];
-    setBlogPosts(updatedPosts);
-    localStorage.setItem('blogPosts', JSON.stringify(updatedPosts));
-    setPostForm({ title: "", content: "", excerpt: "", tags: "" });
-    setIsCreatingPost(false);
+    try {
+      const response = await fetch('/api/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'create', post })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setStatusMessage({ type: 'success', text: `Post published! Commit: "${result.commitMessage}"` });
+        setBlogPosts([post, ...blogPosts]);
+        setPostForm({ title: "", content: "", excerpt: "", tags: "" });
+        setIsCreatingPost(false);
+      } else {
+        setStatusMessage({ type: 'error', text: result.error || 'Failed to publish post' });
+      }
+    } catch (error) {
+      setStatusMessage({ type: 'error', text: 'Network error. Please try again.' });
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
-  const handleEditPost = (e: React.FormEvent) => {
+  const handleEditPost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingPostId) return;
+    
+    setIsPublishing(true);
+    setStatusMessage(null);
 
-    const updatedPosts = blogPosts.map(post => {
-      if (post.id === editingPostId) {
-        return {
-          ...post,
-          title: postForm.title,
-          content: postForm.content,
-          excerpt: postForm.excerpt,
-          tags: postForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-          readTime: calculateReadTime(postForm.content)
-        };
+    const existingPost = blogPosts.find(p => p.id === editingPostId);
+    const updatedPost: BlogPost = {
+      id: editingPostId,
+      title: postForm.title,
+      content: postForm.content,
+      excerpt: postForm.excerpt,
+      author: existingPost?.author || "Jeremy Hopkins",
+      date: existingPost?.date || new Date().toISOString().split('T')[0],
+      tags: postForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      readTime: calculateReadTime(postForm.content)
+    };
+
+    try {
+      const response = await fetch('/api/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', post: updatedPost, postId: editingPostId })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setStatusMessage({ type: 'success', text: `Post updated! Commit: "${result.commitMessage}"` });
+        setBlogPosts(blogPosts.map(p => p.id === editingPostId ? updatedPost : p));
+        setPostForm({ title: "", content: "", excerpt: "", tags: "" });
+        setEditingPostId(null);
+      } else {
+        setStatusMessage({ type: 'error', text: result.error || 'Failed to update post' });
       }
-      return post;
-    });
-
-    setBlogPosts(updatedPosts);
-    localStorage.setItem('blogPosts', JSON.stringify(updatedPosts));
-    setPostForm({ title: "", content: "", excerpt: "", tags: "" });
-    setEditingPostId(null);
+    } catch (error) {
+      setStatusMessage({ type: 'error', text: 'Network error. Please try again.' });
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   const startEditing = (post: BlogPost) => {
@@ -112,11 +166,35 @@ const Blog: React.FC = () => {
     setEditingPostId(null);
   };
 
-  const deletePost = (id: string) => {
-    if (!confirm('Are you sure you want to delete this post?')) return;
-    const updatedPosts = blogPosts.filter(post => post.id !== id);
-    setBlogPosts(updatedPosts);
-    localStorage.setItem('blogPosts', JSON.stringify(updatedPosts));
+  const deletePost = async (id: string) => {
+    const post = blogPosts.find(p => p.id === id);
+    if (!post) return;
+    
+    if (!window.confirm(`Are you sure you want to delete "${post.title}"?`)) return;
+
+    setIsPublishing(true);
+    setStatusMessage(null);
+
+    try {
+      const response = await fetch('/api/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', postId: id })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setStatusMessage({ type: 'success', text: `Post deleted! Commit: "${result.commitMessage}"` });
+        setBlogPosts(blogPosts.filter(p => p.id !== id));
+      } else {
+        setStatusMessage({ type: 'error', text: result.error || 'Failed to delete post' });
+      }
+    } catch (error) {
+      setStatusMessage({ type: 'error', text: 'Network error. Please try again.' });
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   const toggleExpand = (id: string) => {
@@ -196,6 +274,65 @@ const Blog: React.FC = () => {
           }}
         />
       </div>
+
+      {/* Status Message */}
+      <AnimatePresence>
+        {statusMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-24 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-xl shadow-2xl backdrop-blur-xl border ${
+              statusMessage.type === 'success' 
+                ? 'bg-green-500/20 border-green-400/30 text-green-300' 
+                : 'bg-red-500/20 border-red-400/30 text-red-300'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              {statusMessage.type === 'success' ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              )}
+              <span className="font-medium">{statusMessage.text}</span>
+              <button 
+                onClick={() => setStatusMessage(null)}
+                className="ml-4 p-1 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Publishing Overlay */}
+      <AnimatePresence>
+        {isPublishing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className="bg-[#0a0a0f] rounded-2xl border border-white/10 p-8 text-center"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+              <p className="text-white font-semibold text-lg">Publishing to GitHub...</p>
+              <p className="text-gray-500 text-sm mt-2">Committing and pushing changes</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <div className="relative z-10">
@@ -345,9 +482,10 @@ const Blog: React.FC = () => {
                     <div className="flex gap-4 pt-6">
                       <button
                         type="submit"
-                        className="flex-1 py-4 bg-gradient-to-r from-blue-500 via-indigo-600 to-red-500 rounded-xl font-bold text-white text-lg shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-[1.02]"
+                        disabled={isPublishing}
+                        className="flex-1 py-4 bg-gradient-to-r from-blue-500 via-indigo-600 to-red-500 rounded-xl font-bold text-white text-lg shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                       >
-                        {editingPostId ? 'Save Changes' : 'Publish Post'}
+                        {editingPostId ? 'Update & Publish' : 'Publish Post'}
                       </button>
                       {editingPostId && (
                         <button
@@ -368,7 +506,12 @@ const Blog: React.FC = () => {
 
         {/* Blog Posts Display */}
         <div className="max-w-4xl mx-auto">
-          {blogPosts.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-24">
+              <div className="w-16 h-16 mx-auto mb-6 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+              <p className="text-gray-500">Loading posts...</p>
+            </div>
+          ) : blogPosts.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1",
+    "title": "Welcome to My Blog",
+    "content": "This is my first blog post! I'm excited to share my thoughts on AI, web development, and technology. Stay tuned for more content covering my projects, learning experiences, and insights from my journey as a Computer Science student specializing in Artificial Intelligence.\n\nI'll be writing about topics like machine learning, React development, Python programming, and the latest trends in tech. Feel free to reach out if there's a specific topic you'd like me to cover!",
+    "excerpt": "Welcome to my blog where I share insights on AI, web development, and my journey as a CS student.",
+    "author": "Jeremy Hopkins",
+    "date": "2026-02-03",
+    "tags": ["Welcome", "Introduction", "AI", "Web Development"],
+    "readTime": 2
+  }
+]
