@@ -177,7 +177,7 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/thank-you" element={<ThankYou />} />
+          <Route path="/thanks" element={<ThankYou />} />
         </Routes>
       </main>
     </div>

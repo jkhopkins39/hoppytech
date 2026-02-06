@@ -39,8 +39,8 @@ const Contact: React.FC = () => {
     if (honeypot1 || honeypot2) {
       e.preventDefault();
       window.location.href = import.meta.env.DEV 
-        ? 'http://localhost:5173/thank-you'
-        : 'https://jkhopkins39.github.io/thank-you';
+        ? 'http://localhost:5173/thanks'
+        : 'https://www.hoppytech.com/thanks';
       return;
     }
     
@@ -103,8 +103,8 @@ const Contact: React.FC = () => {
   ];
 
   const redirectUrl = import.meta.env.DEV 
-    ? 'http://localhost:5173/thank-you'
-    : 'https://jkhopkins39.github.io/thank-you';
+    ? 'http://localhost:5173/thanks'
+    : 'https://www.hoppytech.com/thanks';
 
   return (
     <div className="min-h-screen bg-[#050508] text-white relative overflow-hidden">
