@@ -35,7 +35,9 @@ const Blog: React.FC = () => {
   };
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
+    // Parse date parts directly to avoid timezone shifting
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
     return date.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric', 
