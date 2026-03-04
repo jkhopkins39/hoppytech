@@ -5,6 +5,6 @@
     "node": "22.x"
   },
   "dependencies": {
-    "openai": "^4.20.1"
+    "@google/genai": "^1.43.0"
   }
 }
