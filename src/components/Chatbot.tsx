@@ -127,7 +127,7 @@ Be helpful, professional, and enthusiastic about Jeremy's work. Keep responses c
       console.error('Error sending message:', error);
       const errorMessage: Message = {
         role: 'assistant',
-        content: "I'm sorry, I'm having trouble connecting right now. Please try again later or contact Jeremy directly at jeremyyhopkins@gmail.com",
+        content: "I'm sorry, I'm having trouble connecting right now. Please try again later or contact Jeremy directly at jeremy@hoppytech.com",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
