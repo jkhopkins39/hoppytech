@@ -43,12 +43,13 @@ app.post('/api/chat', async (req, res) => {
       contents,
       config: {
         systemInstruction: systemMessage?.content || '',
-        maxOutputTokens: 500,
+        maxOutputTokens: 1024,
         temperature: 0.7,
       },
     });
 
-    const text = response.text || 'Sorry, I could not generate a response.';
+    const rawText = response.text || 'Sorry, I could not generate a response.';
+    const text = rawText.replace(/\*+/g, '');
     res.json({ message: text });
   } catch (error) {
     console.error('Error in chat endpoint:', error);

@@ -42,12 +42,13 @@ export default async function handler(req, res) {
       contents,
       config: {
         systemInstruction: systemMessage?.content || '',
-        maxOutputTokens: 500,
+        maxOutputTokens: 1024,
         temperature: 0.7,
       },
     });
 
-    const text = response.text || 'Sorry, I could not generate a response.';
+    const rawText = response.text || 'Sorry, I could not generate a response.';
+    const text = rawText.replace(/\*+/g, '');
 
     res.status(200).json({ message: text });
   } catch (error) {
