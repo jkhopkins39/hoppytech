@@ -1,7 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY });
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -17,6 +15,14 @@ export default async function handler(req, res) {
   }
 
   try {
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+
+    if (!apiKey) {
+      return res.status(500).json({ error: 'Gemini API key not configured' });
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
     const { messages } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
@@ -47,17 +53,20 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error in chat endpoint:', error);
 
-    if (error.message?.includes('quota')) {
+    const errorMsg = error?.message || String(error);
+
+    if (errorMsg.includes('quota')) {
       res.status(429).json({
         error: 'API quota exceeded. Please try again later or contact Jeremy directly.'
       });
-    } else if (error.message?.includes('API key')) {
+    } else if (errorMsg.includes('API key') || errorMsg.includes('API_KEY')) {
       res.status(401).json({
         error: 'Invalid API key. Please check your Gemini API key configuration.'
       });
     } else {
       res.status(500).json({
-        error: 'Internal server error. Please try again later.'
+        error: 'Internal server error. Please try again later.',
+        details: errorMsg
       });
     }
   }
