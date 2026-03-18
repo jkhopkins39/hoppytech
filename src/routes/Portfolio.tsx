@@ -54,7 +54,7 @@ const Portfolio: React.FC = () => {
       id: 3,
       title: "SXNCTUARY",
       description: "A modern web platform featuring innovative design and functionality. This project demonstrates advanced web development techniques and creative user interface design.",
-      shortDescription: "Modern web platform with innovative design",
+      shortDescription: "Modern website for DNB artist",
       image: "/images/projects/sxnctuary.webp",
       imageWebP: "/images/projects/sxnctuary.webp",
       imageFallback: "/images/projects/sxnctuary.png",
