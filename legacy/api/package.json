@@ -1,0 +1,11 @@
+{
+  "name": "api",
+  "type": "module",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@google/genai": "^1.43.0"
+  }
+}
