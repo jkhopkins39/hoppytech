@@ -93,7 +93,13 @@ Be helpful, professional, and concise. For specifics not listed, suggest contact
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || `Server error ${response.status}`);
+        const errBody =
+          typeof data.error === 'string'
+            ? data.error
+            : data.error != null
+              ? JSON.stringify(data.error)
+              : `Server error ${response.status}`;
+        throw new Error(errBody);
       }
 
       setMessages((prev) => [

@@ -18,11 +18,25 @@ if (!apiKey) {
   console.log('✅ Gemini API key is configured');
 }
 
-const ai = new GoogleGenAI({});
+const MODEL = 'gemini-3-flash-preview';
+
+function getResponseText(response) {
+  if (response?.text) return response.text;
+  const parts = response?.candidates?.[0]?.content?.parts;
+  if (!parts?.length) return '';
+  return parts.map((p) => p.text || '').join('');
+}
 
 // Chat API endpoint
 app.post('/api/chat', async (req, res) => {
   try {
+    const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (!key) {
+      return res.status(500).json({ error: 'GEMINI_API_KEY is not set in .env' });
+    }
+
+    const ai = new GoogleGenAI({ apiKey: key });
+
     const { messages } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
@@ -37,33 +51,37 @@ app.post('/api/chat', async (req, res) => {
       parts: [{ text: msg.content }]
     }));
 
+    const systemInstruction = systemMessage?.content
+      ? { parts: [{ text: systemMessage.content }] }
+      : undefined;
+
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: MODEL,
       contents,
       config: {
-        systemInstruction: systemMessage?.content || '',
+        systemInstruction,
         maxOutputTokens: 1024,
         temperature: 0.7,
       },
     });
 
-    const rawText = response.text || 'Sorry, I could not generate a response.';
+    const rawText = getResponseText(response) || 'Sorry, I could not generate a response.';
     const text = rawText.replace(/\*+/g, '');
     res.json({ message: text });
   } catch (error) {
     console.error('Error in chat endpoint:', error);
-
-    if (error.message?.includes('quota')) {
+    const msg = error?.message || String(error);
+    if (msg.includes('quota')) {
       res.status(429).json({
         error: 'API quota exceeded. Please try again later or contact Jeremy directly.'
       });
-    } else if (error.message?.includes('API key')) {
+    } else if (msg.includes('API key') || msg.includes('API_KEY')) {
       res.status(401).json({
         error: 'Invalid API key. Please check your Gemini API key configuration.'
       });
     } else {
       res.status(500).json({
-        error: 'Internal server error. Please try again later.'
+        error: msg,
       });
     }
   }
