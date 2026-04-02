@@ -45,14 +45,16 @@ function chunkText(chunk) {
 }
 
 async function streamGenerate(ai, contents, systemInstruction, res) {
+  const config = {
+    maxOutputTokens: MAX_OUTPUT_TOKENS,
+    temperature: 0.6,
+  };
+  if (systemInstruction) config.systemInstruction = systemInstruction;
+
   const stream = await ai.models.generateContentStream({
     model: MODEL,
     contents,
-    config: {
-      systemInstruction,
-      maxOutputTokens: MAX_OUTPUT_TOKENS,
-      temperature: 0.6,
-    },
+    config,
   });
 
   res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
@@ -105,11 +107,12 @@ export default async function handler(req, res) {
 
     const contents = conversationMessages.map((msg) => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }],
+      parts: [{ text: String(msg.content ?? '') }],
     }));
 
+    /** ContentUnion: plain string is valid and avoids schema mismatches vs nested parts. */
     const systemInstruction = systemMessage?.content
-      ? { parts: [{ text: systemMessage.content }] }
+      ? String(systemMessage.content)
       : undefined;
 
     const ai = new GoogleGenAI({ apiKey });

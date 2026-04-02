@@ -53,7 +53,7 @@ CONTACT: jeremyyhopkins@gmail.com | GitHub: jkhopkins39 | LinkedIn: jeremy-hopki
 
 Be helpful, professional, and concise. For specifics not listed, suggest contacting Jeremy directly.
 
-OUTPUT: Reply briefly for greetings and simple questions (often 1–3 sentences). Expand only when the user asks for detail.`;
+OUTPUT: Reply briefly for greetings and simple questions (often 1-3 sentences). Expand only when the user asks for detail.`;
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -137,14 +137,19 @@ OUTPUT: Reply briefly for greetings and simple questions (often 1–3 sentences)
           const lines = buffer.split('\n');
           buffer = lines.pop() ?? '';
           for (const line of lines) {
-            if (!line.trim()) continue;
+            const trimmed = line.trim();
+            if (!trimmed) continue;
             let obj: { t?: string; done?: boolean; error?: string };
             try {
-              obj = JSON.parse(line) as { t?: string; done?: boolean; error?: string };
+              obj = JSON.parse(trimmed) as { t?: string; done?: boolean; error?: string };
             } catch {
               continue;
             }
-            if (obj.error) throw new Error(obj.error);
+            if (obj.error != null) {
+              throw new Error(
+                typeof obj.error === 'string' ? obj.error : JSON.stringify(obj.error),
+              );
+            }
             if (obj.t) {
               acc += obj.t;
               applyAcc(acc);
@@ -154,14 +159,22 @@ OUTPUT: Reply briefly for greetings and simple questions (often 1–3 sentences)
         }
         if (buffer.trim()) {
           try {
-            const obj = JSON.parse(buffer) as { t?: string; error?: string; done?: boolean };
-            if (obj.error) throw new Error(obj.error);
+            const obj = JSON.parse(buffer.trim()) as { t?: string; error?: string; done?: boolean };
+            if (obj.error != null) {
+              throw new Error(
+                typeof obj.error === 'string' ? obj.error : JSON.stringify(obj.error),
+              );
+            }
             if (obj.t) {
               acc += obj.t;
               applyAcc(acc);
             }
-          } catch {
-            /* incomplete trailing line */
+          } catch (e) {
+            if (e instanceof SyntaxError) {
+              /* incomplete trailing line */
+            } else {
+              throw e;
+            }
           }
         }
         applyAcc(acc.replace(/\*+/g, '') || "I couldn't generate a reply. Try again.");
