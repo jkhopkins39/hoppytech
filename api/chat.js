@@ -32,10 +32,17 @@ export default async function handler(req, res) {
     const systemMessage = messages.find(m => m.role === 'system');
     const conversationMessages = messages.filter(m => m.role !== 'system');
 
-    const contents = conversationMessages.map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }]
-    }));
+    const contents = conversationMessages
+      .map(msg => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      }))
+      .filter((_, i, arr) => {
+        // Gemini requires conversations to start with a user turn —
+        // drop any leading model messages (e.g. the initial greeting).
+        if (i === 0 && arr[0].role === 'model') return false;
+        return true;
+      });
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash',
