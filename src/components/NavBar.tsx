@@ -16,6 +16,7 @@ const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkLogin = () => {
@@ -38,7 +39,10 @@ const NavBar = () => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const outsideHamburger = menuRef.current && !menuRef.current.contains(target);
+      const outsideDrawer = drawerRef.current && !drawerRef.current.contains(target);
+      if (outsideHamburger && outsideDrawer) {
         setIsMenuOpen(false);
       }
     };
@@ -196,6 +200,7 @@ const NavBar = () => {
 
       {/* Mobile drawer */}
       <div
+        ref={drawerRef}
         className={`fixed top-0 right-0 h-full w-72 border-l z-50 md:hidden transform transition-transform duration-300 ease-out ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
