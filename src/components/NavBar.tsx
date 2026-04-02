@@ -105,7 +105,7 @@ const NavBar = () => {
               />
             </div>
             <span className="font-sans font-semibold text-[15px] tracking-tight text-ink hidden sm:block">
-              Jeremy Hopkins
+              Home
             </span>
           </Link>
 

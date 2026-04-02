@@ -100,7 +100,7 @@ function HomePage() {
               variants={fadeUp}
               className="text-[clamp(2.6rem,6vw,5.2rem)] font-bold leading-[1.08] tracking-tight text-ink mb-6"
             >
-              AI Developer<br />
+              Jeremy Hopkins<br />
               <span
                 className="italic"
                 style={{
@@ -109,9 +109,10 @@ function HomePage() {
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
+                  paddingRight: "0.1em",
                 }}
               >
-                & Builder
+                Fullstack & AI Dev
               </span>
             </motion.h1>
 
@@ -123,9 +124,10 @@ function HomePage() {
               variants={fadeUp}
               className="text-muted text-lg leading-relaxed max-w-md mb-10"
             >
-              Computer Science student at Kennesaw State University,
-              specializing in AI & Machine Learning — building innovative
-              solutions with React, Python, and modern web technologies.
+              Hi, I'm Jeremy! I'm a KSU student graduating in May with a
+              B.S. in Computer Science with a concentration in AI. I like building
+              unique and practical solutions with AI, and developing other cool stuff.
+              Check out my work below, or reach out with your ideas!
             </motion.p>
 
             {/* CTAs */}
@@ -216,7 +218,7 @@ function HomePage() {
                 </svg>
               ),
               title: "Web Development",
-              desc: "Full-stack web applications using React, Node.js, and modern tooling. Fast, accessible, and production-ready.",
+              desc: "Web applications using React, Node.js, and modern tooling. Simple, fast, and reliable.",
               accent: "var(--accent)",
             },
             {
@@ -226,7 +228,7 @@ function HomePage() {
                 </svg>
               ),
               title: "AI & Machine Learning",
-              desc: "Integrating intelligence into applications using TensorFlow, PyTorch, and the OpenAI API.",
+              desc: "Integrating intelligence into applications using TensorFlow, PyTorch, and Gemini; I believe AI is the next frontier!",
               accent: "#7C5CBF",
             },
             {
@@ -236,7 +238,7 @@ function HomePage() {
                 </svg>
               ),
               title: "Software Engineering",
-              desc: "Clean, maintainable code with best practices — test-driven development, object-oriented design, and clear documentation.",
+              desc: "My goal is to deliver the best product possible. Every solution is customized to fit your needs, with best practices, clean documentation, and ongoing support.",
               accent: "#0EA5E9",
             },
           ].map((card, i) => (
@@ -295,7 +297,7 @@ function HomePage() {
           </div>
           <div className="flex flex-wrap gap-4 flex-none">
             <a
-              href={socialLinks.github}
+              href={socialLinks.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-3 border text-ink rounded-xl transition-all duration-200 text-[14px] font-medium flex items-center gap-2"
@@ -310,9 +312,9 @@ function HomePage() {
               }}
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
               </svg>
-              GitHub
+              LinkedIn
             </a>
             <a
               href={`mailto:${contactInfo.email}`}
