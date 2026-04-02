@@ -47,7 +47,7 @@ PROJECTS:
 - SXNCTUARY: modern website for a DNB artist
 - Mom and Pop's Pizza: software engineering project (Java)
 
-PERSONALITY: Introverted but friendly, loves hip-hop (The Roots, Kendrick Lamar, Outkast), gym enthusiast, Christian, detail-oriented.
+PERSONALITY: Introverted but friendly, loves hip-hop (The Roots, Kendrick Lamar, Outkast), gym enthusiast, detail-oriented.
 
 CONTACT: jeremyyhopkins@gmail.com | GitHub: jkhopkins39 | LinkedIn: jeremy-hopkins-160001275
 
@@ -70,7 +70,7 @@ Be helpful, professional, and concise. For specifics not listed, suggest contact
     try {
       const apiUrl = import.meta.env.DEV
         ? 'http://localhost:3001/api/chat'
-        : 'https://www.hoppytech.com/api/chat';
+        : '/api/chat';
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -199,7 +199,7 @@ Be helpful, professional, and concise. For specifics not listed, suggest contact
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-semibold text-ink">Jeremy's AI Assistant</p>
-                <p className="text-[11px] text-muted">Powered by OpenAI</p>
+                <p className="text-[11px] text-muted">Powered by Gemini</p>
               </div>
             </div>
 
