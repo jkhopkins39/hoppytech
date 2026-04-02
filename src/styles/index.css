@@ -1,0 +1,211 @@
+/* ─── Google Fonts ───────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design tokens — DARK (default) ────────────────────── */
+:root {
+  --canvas:          #09090F;
+  --surface:         #111119;
+  --surface-2:       #18181F;
+  --surface-3:       #1E1E27;
+  --ink:             #F0EDE8;
+  --muted:           #C8C8E0;
+  --muted-2:         #9898B8;
+  --muted-3:         #747490;
+  --accent:          #E8971A;
+  --accent-light:    #FFBE3D;
+  --border-color:    rgba(255, 255, 255, 0.08);
+  --border-hover:    rgba(255, 255, 255, 0.16);
+  --surface-alpha:   rgba(255, 255, 255, 0.04);
+  --surface-alpha-h: rgba(255, 255, 255, 0.08);
+
+  font-family: 'DM Sans', system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--ink);
+  background-color: var(--canvas);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Design tokens — LIGHT override ────────────────────── */
+[data-theme="light"] {
+  --canvas:          #F5F1EA;
+  --surface:         #FFFFFF;
+  --surface-2:       #EDE9E0;
+  --surface-3:       #E4E0D6;
+  --ink:             #0D0D18;
+  --muted:           #383850;
+  --muted-2:         #5E5E78;
+  --muted-3:         #808098;
+  --accent:          #B86800;
+  --accent-light:    #D47A10;
+  --border-color:    rgba(0, 0, 0, 0.10);
+  --border-hover:    rgba(0, 0, 0, 0.20);
+  --surface-alpha:   rgba(0, 0, 0, 0.03);
+  --surface-alpha-h: rgba(0, 0, 0, 0.07);
+}
+
+/* ─── Base styles ────────────────────────────────────────── */
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+/* ─── Tailwind utility layer ─────────────────────────────── */
+@layer utilities {
+  .bg-canvas    { background-color: var(--canvas); }
+  .bg-surface   { background-color: var(--surface); }
+  .bg-surface-2 { background-color: var(--surface-2); }
+  .bg-surface-3 { background-color: var(--surface-3); }
+
+  .text-ink     { color: var(--ink); }
+  .text-muted   { color: var(--muted); }
+  .text-muted-2 { color: var(--muted-2); }
+  .text-muted-3 { color: var(--muted-3); }
+  .text-accent  { color: var(--accent); }
+  .text-accent-light { color: var(--accent-light); }
+
+  .border-subtle      { border-color: var(--border-color); }
+  .border-subtle-hover:hover { border-color: var(--border-hover); }
+
+  /* Accent alpha helpers */
+  .bg-accent-subtle     { background-color: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .bg-accent-subtle-2   { background-color: color-mix(in srgb, var(--accent)  5%, transparent); }
+  .border-accent-subtle { border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+  .border-accent-subtle-2 { border-color: color-mix(in srgb, var(--accent) 20%, transparent); }
+  .focus\:border-accent-subtle:focus { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+  .hover\:bg-accent-subtle:hover { background-color: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .hover\:bg-accent-subtle-2:hover { background-color: color-mix(in srgb, var(--accent)  5%, transparent); }
+  .hover\:border-accent-subtle:hover { border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+  .placeholder-muted-3::placeholder { color: var(--muted-3); }
+  .bg-accent     { background-color: var(--accent); }
+  .hover\:bg-accent-light:hover { background-color: var(--accent-light); }
+  .border-t-accent { border-top-color: var(--accent); }
+  .border-accent   { border-color: var(--accent); }
+  .hover\:bg-surface-alpha:hover { background-color: var(--surface-alpha); }
+
+  /* Gradient text */
+  .text-gradient-amber {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Noise texture */
+  .noise-bg {
+    position: relative;
+  }
+  .noise-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.4;
+    z-index: 0;
+  }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--canvas); }
+::-webkit-scrollbar-thumb {
+  background: var(--muted-2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ─── Selection ──────────────────────────────────────────── */
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--ink);
+}
+
+/* ─── Links ──────────────────────────────────────────────── */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─── Focus ring ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ─── Transition on theme switch ─────────────────────────── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+/* Override to NOT transition transforms / opacity (breaks animations) */
+.nad-toggle,
+.nad-toggle *,
+.nad-toggle__content,
+.nad-astrobear,
+.nad-astrobear svg,
+.nad-pilot-bear,
+.nad-moon,
+.nad-stars path,
+.nad-toggle__backdrop,
+.nad-toggle__indicator,
+.nad-toggle__star {
+  transition: none !important;
+}
+
+/* Re-apply the toggle's own transitions */
+.nad-toggle {
+  transition: background var(--speed, 0.5s) var(--easing, ease) !important;
+}
+.nad-toggle__backdrop {
+  transition: translate var(--speed, 0.5s) var(--easing, ease) !important;
+}
+.nad-toggle__indicator {
+  transition: translate var(--speed, 0.5s) var(--slide-ease, ease) !important;
+}
+.nad-moon {
+  transition: translate var(--speed, 0.5s) ease-in-out !important;
+}
+.nad-stars path {
+  transition: scale var(--speed, 0.5s) calc(var(--speed, 0.5s) * 0.5) var(--easing, ease) !important;
+}
+.nad-astrobear {
+  transition: translate calc(var(--speed, 0.5s) + (var(--dark, 0) * (var(--bear-speed, 10s) - var(--speed, 0.5s)))) calc(var(--bear-speed, 10s) * (0.4 * var(--dark, 0))) linear !important;
+}
+.nad-astrobear svg {
+  transition: rotate calc(var(--speed, 0.5s) + (var(--dark, 0) * (var(--bear-speed, 10s) - var(--speed, 0.5s)))) calc(var(--bear-speed, 10s) * 0.4) linear, scale var(--speed, 0.5s) ease-in-out !important;
+}
+.nad-astrobear__container {
+  transition: opacity var(--speed, 0.5s) var(--easing, ease), translate var(--speed, 0.5s) var(--easing, ease) !important;
+}
+.nad-pilot__container {
+  transition: opacity var(--speed, 0.5s) var(--easing, ease), translate var(--speed, 0.5s) var(--easing, ease) !important;
+}
+.nad-pilot-bear {
+  transition: translate calc(var(--speed, 0.5s) + ((1 - var(--dark, 0)) * ((var(--bear-speed, 10s) * 0.5) - var(--speed, 0.5s)))) calc((var(--bear-speed, 10s) * 0.5) * ((1 - var(--dark, 0)) * 0.4)) linear !important;
+}
+.nad-toggle__star {
+  transition: translate var(--speed, 0.5s) var(--easing, ease) !important;
+}
+
+/* ─── Framer Motion override (don't transition layout) ───── */
+[data-framer-motion] * {
+  transition: none !important;
+}

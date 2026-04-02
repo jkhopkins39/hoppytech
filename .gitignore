@@ -9,8 +9,8 @@ lerna-debug.log*
 
 node_modules/
 dist
-*.tsbuildinfo
 dist-ssr
+*.tsbuildinfo
 *.local
 
 # Environment variables
@@ -32,4 +32,5 @@ dist-ssr
 *.sw?
 
 CHATBOT_SETUP.md
+DOMAIN_SETUP.md
 .vercel
