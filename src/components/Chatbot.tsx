@@ -72,31 +72,41 @@ Be helpful, professional, and concise. For specifics not listed, suggest contact
         ? 'http://localhost:3001/api/chat'
         : '/api/chat';
 
+      // Skip index 0 (initial greeting) — Gemini requires conversations to start
+      // with a user turn, so the assistant greeting must not be in the history.
+      const history = messages
+        .slice(1)
+        .map((m) => ({ role: m.role, content: m.content }));
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [
             { role: 'system', content: systemContext },
-            ...messages.map((m) => ({ role: m.role, content: m.content })),
+            ...history,
             { role: 'user', content: sentValue },
           ],
         }),
       });
 
-      if (!response.ok) throw new Error('Bad response');
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Server error ${response.status}`);
+      }
+
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: data.message, timestamp: new Date() },
       ]);
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: "I'm having trouble connecting right now. Try again later or email Jeremy directly.",
+          content: `Something went wrong: ${msg}. Try again or email Jeremy directly.`,
           timestamp: new Date(),
         },
       ]);
