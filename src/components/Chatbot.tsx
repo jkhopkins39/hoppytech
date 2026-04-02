@@ -51,7 +51,9 @@ PERSONALITY: Introverted but friendly, loves hip-hop (The Roots, Kendrick Lamar,
 
 CONTACT: jeremyyhopkins@gmail.com | GitHub: jkhopkins39 | LinkedIn: jeremy-hopkins-160001275
 
-Be helpful, professional, and concise. For specifics not listed, suggest contacting Jeremy directly.`;
+Be helpful, professional, and concise. For specifics not listed, suggest contacting Jeremy directly.
+
+OUTPUT: Reply briefly for greetings and simple questions (often 1–3 sentences). Expand only when the user asks for detail.`;
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -80,7 +82,10 @@ Be helpful, professional, and concise. For specifics not listed, suggest contact
 
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/x-ndjson, application/json',
+        },
         body: JSON.stringify({
           messages: [
             { role: 'system', content: systemContext },
@@ -90,9 +95,10 @@ Be helpful, professional, and concise. For specifics not listed, suggest contact
         }),
       });
 
-      const data = await response.json();
+      const ct = response.headers.get('content-type') || '';
 
       if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as { error?: unknown };
         const errBody =
           typeof data.error === 'string'
             ? data.error
@@ -102,10 +108,74 @@ Be helpful, professional, and concise. For specifics not listed, suggest contact
         throw new Error(errBody);
       }
 
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: data.message, timestamp: new Date() },
-      ]);
+      if (ct.includes('ndjson') && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let acc = '';
+
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: '', timestamp: new Date() },
+        ]);
+
+        const applyAcc = (text: string) => {
+          setMessages((prev) => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            if (last?.role === 'assistant') {
+              next[next.length - 1] = { ...last, content: text };
+            }
+            return next;
+          });
+        };
+
+        readLines: while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            let obj: { t?: string; done?: boolean; error?: string };
+            try {
+              obj = JSON.parse(line) as { t?: string; done?: boolean; error?: string };
+            } catch {
+              continue;
+            }
+            if (obj.error) throw new Error(obj.error);
+            if (obj.t) {
+              acc += obj.t;
+              applyAcc(acc);
+            }
+            if (obj.done) break readLines;
+          }
+        }
+        if (buffer.trim()) {
+          try {
+            const obj = JSON.parse(buffer) as { t?: string; error?: string; done?: boolean };
+            if (obj.error) throw new Error(obj.error);
+            if (obj.t) {
+              acc += obj.t;
+              applyAcc(acc);
+            }
+          } catch {
+            /* incomplete trailing line */
+          }
+        }
+        applyAcc(acc.replace(/\*+/g, '') || "I couldn't generate a reply. Try again.");
+      } else {
+        const data = (await response.json()) as { message?: string };
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: (data.message || '').replace(/\*+/g, ''),
+            timestamp: new Date(),
+          },
+        ]);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
       setMessages((prev) => [

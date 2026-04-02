@@ -4,11 +4,13 @@ const MODEL = 'gemini-3-flash-preview';
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 400;
 
+/** Lower ceiling = faster completion for short chat turns. */
+const MAX_OUTPUT_TOKENS = 512;
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-/** Pull a stable error code/message from @google/genai thrown errors (often nested JSON in .message). */
 function parseGeminiError(err) {
   const raw = err?.message != null ? String(err.message) : String(err);
   let code = err?.status ?? err?.code ?? err?.error?.code;
@@ -35,11 +37,35 @@ function isRetryableStatus(code, message) {
   );
 }
 
-function getResponseText(response) {
-  if (response?.text) return response.text;
-  const parts = response?.candidates?.[0]?.content?.parts;
+function chunkText(chunk) {
+  if (chunk?.text) return chunk.text;
+  const parts = chunk?.candidates?.[0]?.content?.parts;
   if (!parts?.length) return '';
   return parts.map((p) => p.text || '').join('');
+}
+
+async function streamGenerate(ai, contents, systemInstruction, res) {
+  const stream = await ai.models.generateContentStream({
+    model: MODEL,
+    contents,
+    config: {
+      systemInstruction,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
+      temperature: 0.6,
+    },
+  });
+
+  res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.status(200);
+
+  for await (const chunk of stream) {
+    const t = chunkText(chunk);
+    if (t) res.write(`${JSON.stringify({ t })}\n`);
+  }
+  res.write(`${JSON.stringify({ done: true })}\n`);
+  res.end();
 }
 
 export default async function handler(req, res) {
@@ -90,19 +116,8 @@ export default async function handler(req, res) {
 
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
-        const response = await ai.models.generateContent({
-          model: MODEL,
-          contents,
-          config: {
-            systemInstruction,
-            maxOutputTokens: 1024,
-            temperature: 0.7,
-          },
-        });
-
-        const rawText = getResponseText(response) || 'Sorry, I could not generate a response.';
-        const text = rawText.replace(/\*+/g, '');
-        return res.status(200).json({ message: text });
+        await streamGenerate(ai, contents, systemInstruction, res);
+        return;
       } catch (err) {
         const { code, message } = parseGeminiError(err);
         if (attempt < MAX_RETRIES - 1 && isRetryableStatus(code, message)) {
@@ -120,8 +135,17 @@ export default async function handler(req, res) {
       : code === 503 ? 503
       : code === 401 || code === 403 ? code
       : 500;
-    return res.status(status >= 400 && status < 600 ? status : 500).json({
-      error: message || 'Request failed',
-    });
+
+    if (!res.headersSent) {
+      return res.status(status >= 400 && status < 600 ? status : 500).json({
+        error: message || 'Request failed',
+      });
+    }
+    try {
+      res.write(`${JSON.stringify({ error: message || 'Request failed' })}\n`);
+      res.end();
+    } catch {
+      /* response already closed */
+    }
   }
 }

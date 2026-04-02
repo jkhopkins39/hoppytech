@@ -19,15 +19,16 @@ if (!apiKey) {
 }
 
 const MODEL = 'gemini-3-flash-preview';
+const MAX_OUTPUT_TOKENS = 512;
 
-function getResponseText(response) {
-  if (response?.text) return response.text;
-  const parts = response?.candidates?.[0]?.content?.parts;
+function chunkText(chunk) {
+  if (chunk?.text) return chunk.text;
+  const parts = chunk?.candidates?.[0]?.content?.parts;
   if (!parts?.length) return '';
   return parts.map((p) => p.text || '').join('');
 }
 
-// Chat API endpoint
+// Chat API endpoint (NDJSON stream — matches Vercel api/chat.js)
 app.post('/api/chat', async (req, res) => {
   try {
     const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
@@ -55,34 +56,44 @@ app.post('/api/chat', async (req, res) => {
       ? { parts: [{ text: systemMessage.content }] }
       : undefined;
 
-    const response = await ai.models.generateContent({
+    const stream = await ai.models.generateContentStream({
       model: MODEL,
       contents,
       config: {
         systemInstruction,
-        maxOutputTokens: 1024,
-        temperature: 0.7,
+        maxOutputTokens: MAX_OUTPUT_TOKENS,
+        temperature: 0.6,
       },
     });
 
-    const rawText = getResponseText(response) || 'Sorry, I could not generate a response.';
-    const text = rawText.replace(/\*+/g, '');
-    res.json({ message: text });
+    res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.status(200);
+
+    for await (const chunk of stream) {
+      const t = chunkText(chunk);
+      if (t) res.write(`${JSON.stringify({ t })}\n`);
+    }
+    res.write(`${JSON.stringify({ done: true })}\n`);
+    res.end();
   } catch (error) {
     console.error('Error in chat endpoint:', error);
     const msg = error?.message || String(error);
-    if (msg.includes('quota')) {
-      res.status(429).json({
-        error: 'API quota exceeded. Please try again later or contact Jeremy directly.'
-      });
-    } else if (msg.includes('API key') || msg.includes('API_KEY')) {
-      res.status(401).json({
-        error: 'Invalid API key. Please check your Gemini API key configuration.'
-      });
+    if (!res.headersSent) {
+      if (msg.includes('quota')) {
+        res.status(429).json({
+          error: 'API quota exceeded. Please try again later or contact Jeremy directly.',
+        });
+      } else if (msg.includes('API key') || msg.includes('API_KEY')) {
+        res.status(401).json({
+          error: 'Invalid API key. Please check your Gemini API key configuration.',
+        });
+      } else {
+        res.status(500).json({ error: msg });
+      }
     } else {
-      res.status(500).json({
-        error: msg,
-      });
+      res.write(`${JSON.stringify({ error: msg })}\n`);
+      res.end();
     }
   }
 });
