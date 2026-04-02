@@ -12,14 +12,13 @@ app.use(cors());
 app.use(express.json());
 
 const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
-
 if (!apiKey) {
   console.error('❌ GEMINI_API_KEY environment variable is not set!');
 } else {
   console.log('✅ Gemini API key is configured');
 }
 
-const ai = new GoogleGenAI({ apiKey });
+const ai = new GoogleGenAI({});
 
 // Chat API endpoint
 app.post('/api/chat', async (req, res) => {
