@@ -1,34 +1,32 @@
-import { GoogleGenAI } from '@google/genai';
+/**
+ * Vercel Edge Runtime — starts in <1ms, no Node.js cold start.
+ * Calls the Gemini REST API directly via fetch (no SDK import cost).
+ * Transforms Gemini SSE → NDJSON so the frontend stays unchanged.
+ */
+export const config = { runtime: 'edge' };
 
 const MODEL = 'gemini-3-flash-preview';
-const MAX_RETRIES = 3;
-const INITIAL_BACKOFF_MS = 400;
-
-/** Lower ceiling = faster completion for short chat turns. */
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const MAX_OUTPUT_TOKENS = 512;
+const MAX_RETRIES = 3;
 
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
-}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function parseGeminiError(err) {
-  const raw = err?.message != null ? String(err.message) : String(err);
-  let code = err?.status ?? err?.code ?? err?.error?.code;
-  let message = raw;
-  try {
-    const parsed = JSON.parse(raw);
-    const e = parsed?.error ?? parsed;
-    code = code ?? e?.code ?? e?.status;
-    message = e?.message ?? raw;
-  } catch {
-    /* keep message as raw */
-  }
-  return { code, message, raw };
-}
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
 
-function isRetryableStatus(code, message) {
-  if (code === 503 || code === 429) return true;
-  const m = (message || '').toLowerCase();
+const jsonRes = (body, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...CORS },
+  });
+
+function isOverloaded(status, errBody) {
+  if (status === 503 || status === 429) return true;
+  const m = (errBody?.error?.message || '').toLowerCase();
   return (
     m.includes('unavailable') ||
     m.includes('high demand') ||
@@ -37,52 +35,9 @@ function isRetryableStatus(code, message) {
   );
 }
 
-function chunkText(chunk) {
-  if (chunk?.text) return chunk.text;
-  const parts = chunk?.candidates?.[0]?.content?.parts;
-  if (!parts?.length) return '';
-  return parts.map((p) => p.text || '').join('');
-}
-
-async function streamGenerate(ai, contents, systemInstruction, res) {
-  const config = {
-    maxOutputTokens: MAX_OUTPUT_TOKENS,
-    temperature: 0.6,
-  };
-  if (systemInstruction) config.systemInstruction = systemInstruction;
-
-  const stream = await ai.models.generateContentStream({
-    model: MODEL,
-    contents,
-    config,
-  });
-
-  res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-cache, no-transform');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.status(200);
-
-  for await (const chunk of stream) {
-    const t = chunkText(chunk);
-    if (t) res.write(`${JSON.stringify({ t })}\n`);
-  }
-  res.write(`${JSON.stringify({ done: true })}\n`);
-  res.end();
-}
-
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+export default async function handler(req) {
+  if (req.method === 'OPTIONS') return new Response(null, { status: 200, headers: CORS });
+  if (req.method !== 'POST') return jsonRes({ error: 'Method not allowed' }, 405);
 
   const apiKey =
     process.env.GEMINI_API_KEY ||
@@ -90,65 +45,122 @@ export default async function handler(req, res) {
     process.env.GOOGLE_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({
-      error: 'GEMINI_API_KEY is not set. Add it in Vercel → Project → Settings → Environment Variables.',
-    });
+    return jsonRes(
+      { error: 'GEMINI_API_KEY not set — add it in Vercel → Settings → Environment Variables.' },
+      500,
+    );
   }
 
+  let messages;
   try {
-    const { messages } = req.body;
-
-    if (!messages || !Array.isArray(messages)) {
-      return res.status(400).json({ error: 'Messages array is required' });
-    }
-
-    const systemMessage = messages.find((m) => m.role === 'system');
-    const conversationMessages = messages.filter((m) => m.role !== 'system');
-
-    const contents = conversationMessages.map((msg) => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: String(msg.content ?? '') }],
-    }));
-
-    /** ContentUnion: plain string is valid and avoids schema mismatches vs nested parts. */
-    const systemInstruction = systemMessage?.content
-      ? String(systemMessage.content)
-      : undefined;
-
-    const ai = new GoogleGenAI({ apiKey });
-
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-      try {
-        await streamGenerate(ai, contents, systemInstruction, res);
-        return;
-      } catch (err) {
-        const { code, message } = parseGeminiError(err);
-        if (attempt < MAX_RETRIES - 1 && isRetryableStatus(code, message)) {
-          await sleep(INITIAL_BACKOFF_MS * Math.pow(2, attempt));
-          continue;
-        }
-        throw err;
-      }
-    }
-  } catch (error) {
-    console.error('Chat error:', error);
-    const { code, message } = parseGeminiError(error);
-    const status =
-      code === 429 ? 429
-      : code === 503 ? 503
-      : code === 401 || code === 403 ? code
-      : 500;
-
-    if (!res.headersSent) {
-      return res.status(status >= 400 && status < 600 ? status : 500).json({
-        error: message || 'Request failed',
-      });
-    }
-    try {
-      res.write(`${JSON.stringify({ error: message || 'Request failed' })}\n`);
-      res.end();
-    } catch {
-      /* response already closed */
-    }
+    ({ messages } = await req.json());
+  } catch {
+    return jsonRes({ error: 'Invalid JSON body' }, 400);
   }
+
+  if (!Array.isArray(messages)) return jsonRes({ error: 'messages must be an array' }, 400);
+
+  const systemMessage = messages.find((m) => m.role === 'system');
+  const conversationMessages = messages.filter((m) => m.role !== 'system');
+
+  const contents = conversationMessages.map((m) => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: String(m.content ?? '') }],
+  }));
+
+  const reqBody = {
+    contents,
+    generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.6 },
+  };
+  if (systemMessage?.content) {
+    reqBody.systemInstruction = { parts: [{ text: String(systemMessage.content) }] };
+  }
+
+  const url = `${GEMINI_BASE}/models/${MODEL}:streamGenerateContent?key=${encodeURIComponent(apiKey)}&alt=sse`;
+
+  let geminiRes;
+  let lastErrBody = {};
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      geminiRes = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reqBody),
+      });
+    } catch (e) {
+      return jsonRes({ error: `Network error reaching Gemini: ${e.message}` }, 502);
+    }
+
+    if (geminiRes.ok) break;
+
+    lastErrBody = await geminiRes.json().catch(() => ({}));
+    if (attempt < MAX_RETRIES - 1 && isOverloaded(geminiRes.status, lastErrBody)) {
+      await sleep(350 * Math.pow(2, attempt)); // 350ms, 700ms
+      continue;
+    }
+    break;
+  }
+
+  if (!geminiRes.ok) {
+    const msg = lastErrBody?.error?.message || `Gemini API error ${geminiRes.status}`;
+    return jsonRes({ error: msg }, geminiRes.status);
+  }
+
+  // Transform Gemini SSE → NDJSON for the frontend
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const encoder = new TextEncoder();
+
+  (async () => {
+    const reader = geminiRes.body.getReader();
+    const decoder = new TextDecoder();
+    let sseBuffer = '';
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        sseBuffer += decoder.decode(value, { stream: true });
+        const lines = sseBuffer.split('\n');
+        sseBuffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6).trim();
+          if (!data || data === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(data);
+            const text =
+              parsed?.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') ?? '';
+            if (text) {
+              await writer.write(encoder.encode(`${JSON.stringify({ t: text })}\n`));
+            }
+          } catch {
+            /* skip malformed SSE chunk */
+          }
+        }
+      }
+      await writer.write(encoder.encode(`${JSON.stringify({ done: true })}\n`));
+    } catch (e) {
+      try {
+        await writer.write(encoder.encode(`${JSON.stringify({ error: e.message })}\n`));
+      } catch {
+        /* stream already closed */
+      }
+    } finally {
+      writer.releaseLock();
+      await writable.close().catch(() => {});
+    }
+  })();
+
+  return new Response(readable, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/x-ndjson; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'X-Accel-Buffering': 'no',
+      ...CORS,
+    },
+  });
 }
