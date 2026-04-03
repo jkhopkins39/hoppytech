@@ -99,12 +99,17 @@ OUTPUT: Reply briefly for greetings and simple questions (often 1-3 sentences). 
 
       if (!response.ok) {
         const data = (await response.json().catch(() => ({}))) as { error?: unknown };
-        const errBody =
-          typeof data.error === 'string'
-            ? data.error
-            : data.error != null
-              ? JSON.stringify(data.error)
-              : `Server error ${response.status}`;
+        let errBody: string;
+        if (typeof data.error === 'string') {
+          errBody = data.error;
+        } else if (data.error && typeof data.error === 'object') {
+          const e = data.error as Record<string, unknown>;
+          errBody = typeof e.message === 'string'
+            ? e.message
+            : `Server error ${response.status}`;
+        } else {
+          errBody = `Server error ${response.status}`;
+        }
         throw new Error(errBody);
       }
 
@@ -146,8 +151,12 @@ OUTPUT: Reply briefly for greetings and simple questions (often 1-3 sentences). 
               continue;
             }
             if (obj.error != null) {
+              const e = obj.error;
               throw new Error(
-                typeof obj.error === 'string' ? obj.error : JSON.stringify(obj.error),
+                typeof e === 'string' ? e
+                : (e && typeof e === 'object' && typeof (e as Record<string, unknown>).message === 'string')
+                  ? String((e as Record<string, unknown>).message)
+                  : JSON.stringify(e),
               );
             }
             if (obj.t) {
@@ -161,8 +170,12 @@ OUTPUT: Reply briefly for greetings and simple questions (often 1-3 sentences). 
           try {
             const obj = JSON.parse(buffer.trim()) as { t?: string; error?: string; done?: boolean };
             if (obj.error != null) {
+              const e = obj.error;
               throw new Error(
-                typeof obj.error === 'string' ? obj.error : JSON.stringify(obj.error),
+                typeof e === 'string' ? e
+                : (e && typeof e === 'object' && typeof (e as Record<string, unknown>).message === 'string')
+                  ? String((e as Record<string, unknown>).message)
+                  : JSON.stringify(e),
               );
             }
             if (obj.t) {
