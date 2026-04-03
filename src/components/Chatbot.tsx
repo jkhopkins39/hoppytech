@@ -324,7 +324,7 @@ For anything not listed, suggest contacting Jeremy directly.`;
                 </div>
               ))}
 
-              {isLoading && (
+              {isLoading && messages[messages.length - 1]?.role === 'user' && (
                 <div className="flex justify-start">
                   <div
                     className="px-4 py-3 rounded-2xl rounded-bl-sm"

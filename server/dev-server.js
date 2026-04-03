@@ -18,8 +18,8 @@ if (!apiKey) {
   console.log('✅ Gemini API key is configured');
 }
 
-const MODEL = 'gemini-3-flash-preview';
-const MAX_OUTPUT_TOKENS = 512;
+const MODEL = 'gemini-2.0-flash';
+const MAX_OUTPUT_TOKENS = 384;
 
 function chunkText(chunk) {
   if (chunk?.text) return chunk.text;

@@ -1,125 +1,127 @@
-import { GoogleGenAI } from '@google/genai';
+export const config = { runtime: 'edge' };
 
-const MODEL = 'gemini-3-flash-preview';
-const MAX_RETRIES = 3;
-const INITIAL_BACKOFF_MS = 400;
-const MAX_OUTPUT_TOKENS = 512;
+const MODEL = 'gemini-2.0-flash';
+const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
-// Module-scope client — reused across warm invocations, avoids re-init cost.
-const apiKey =
-  process.env.GEMINI_API_KEY ||
-  process.env.GOOGLE_GEMINI_API_KEY ||
-  process.env.GOOGLE_API_KEY;
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
 
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+function jsonResponse(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
+  });
+}
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+export default async function handler(req) {
+  if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
+  if (req.method !== 'POST') return jsonResponse({ error: 'Method not allowed' }, 405);
 
-function parseGeminiError(err) {
-  const raw = err?.message != null ? String(err.message) : String(err);
-  let code = err?.status ?? err?.code ?? err?.error?.code;
-  let message = raw;
+  const apiKey =
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_GEMINI_API_KEY ||
+    process.env.GOOGLE_API_KEY;
+
+  if (!apiKey) {
+    return jsonResponse(
+      { error: 'GEMINI_API_KEY not set — add it in Vercel → Settings → Environment Variables.' },
+      500,
+    );
+  }
+
+  let messages;
   try {
-    const parsed = JSON.parse(raw);
-    const e = parsed?.error ?? parsed;
-    code = code ?? e?.code ?? e?.status;
-    message = e?.message ?? raw;
+    ({ messages } = await req.json());
   } catch {
-    /* keep message as raw */
+    return jsonResponse({ error: 'Invalid JSON body' }, 400);
   }
-  return { code, message };
-}
-
-function isRetryable(code, message) {
-  if (code === 503 || code === 429) return true;
-  const m = (message || '').toLowerCase();
-  return (
-    m.includes('unavailable') ||
-    m.includes('high demand') ||
-    m.includes('overloaded') ||
-    m.includes('resource exhausted')
-  );
-}
-
-function chunkText(chunk) {
-  if (chunk?.text) return chunk.text;
-  const parts = chunk?.candidates?.[0]?.content?.parts;
-  if (!parts?.length) return '';
-  return parts.map((p) => p.text || '').join('');
-}
-
-async function streamGenerate(contents, systemInstruction, res) {
-  const config = { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.6 };
-  if (systemInstruction) config.systemInstruction = systemInstruction;
-
-  const stream = await ai.models.generateContentStream({ model: MODEL, contents, config });
-
-  res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-cache, no-transform');
-  res.setHeader('X-Accel-Buffering', 'no');
-  res.status(200);
-
-  for await (const chunk of stream) {
-    const t = chunkText(chunk);
-    if (t) res.write(`${JSON.stringify({ t })}\n`);
-  }
-  res.write(`${JSON.stringify({ done: true })}\n`);
-  res.end();
-}
-
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') { res.status(200).end(); return; }
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  if (!ai) {
-    return res.status(500).json({
-      error: 'GEMINI_API_KEY not set — add it in Vercel → Settings → Environment Variables.',
-    });
-  }
-
-  const { messages } = req.body ?? {};
-  if (!Array.isArray(messages)) return res.status(400).json({ error: 'messages must be an array' });
+  if (!Array.isArray(messages)) return jsonResponse({ error: 'messages must be an array' }, 400);
 
   const systemMessage = messages.find((m) => m.role === 'system');
-  const conversationMessages = messages.filter((m) => m.role !== 'system');
+  const contents = messages
+    .filter((m) => m.role !== 'system')
+    .map((m) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: String(m.content ?? '') }],
+    }));
 
-  const contents = conversationMessages.map((m) => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: String(m.content ?? '') }],
-  }));
+  const body = {
+    contents,
+    generationConfig: { maxOutputTokens: 384, temperature: 0.6 },
+  };
 
-  const systemInstruction = systemMessage?.content
-    ? String(systemMessage.content)
-    : undefined;
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    try {
-      await streamGenerate(contents, systemInstruction, res);
-      return;
-    } catch (err) {
-      const { code, message } = parseGeminiError(err);
-      if (attempt < MAX_RETRIES - 1 && isRetryable(code, message)) {
-        await sleep(INITIAL_BACKOFF_MS * Math.pow(2, attempt));
-        continue;
-      }
-
-      console.error('Chat error:', err);
-      const status = code === 429 ? 429 : code === 503 ? 503 : code === 401 || code === 403 ? code : 500;
-
-      if (!res.headersSent) {
-        return res.status(status >= 400 && status < 600 ? status : 500).json({
-          error: message || 'Request failed',
-        });
-      }
-      try {
-        res.write(`${JSON.stringify({ error: message || 'Request failed' })}\n`);
-        res.end();
-      } catch { /* already closed */ }
-      return;
-    }
+  if (systemMessage?.content) {
+    body.systemInstruction = { parts: [{ text: String(systemMessage.content) }] };
   }
+
+  const url = `${API_BASE}/models/${MODEL}:streamGenerateContent?alt=sse&key=${apiKey}`;
+
+  let geminiRes;
+  try {
+    geminiRes = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    return jsonResponse({ error: `Upstream request failed: ${err.message}` }, 502);
+  }
+
+  if (!geminiRes.ok) {
+    const errText = await geminiRes.text().catch(() => 'Unknown upstream error');
+    const status = [400, 401, 403, 429, 503].includes(geminiRes.status) ? geminiRes.status : 502;
+    return jsonResponse({ error: errText }, status);
+  }
+
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const enc = new TextEncoder();
+
+  const pipe = async () => {
+    const reader = geminiRes.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+
+        const lines = buf.split('\n');
+        buf = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const payload = line.slice(6).trim();
+          if (!payload || payload === '[DONE]') continue;
+          try {
+            const text = JSON.parse(payload)?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) await writer.write(enc.encode(JSON.stringify({ t: text }) + '\n'));
+          } catch { /* skip malformed chunk */ }
+        }
+      }
+      await writer.write(enc.encode(JSON.stringify({ done: true }) + '\n'));
+    } catch (err) {
+      try {
+        await writer.write(enc.encode(JSON.stringify({ error: String(err.message || err) }) + '\n'));
+      } catch { /* writer already closed */ }
+    } finally {
+      try { await writer.close(); } catch { /* already closed */ }
+    }
+  };
+
+  pipe();
+
+  return new Response(readable, {
+    headers: {
+      ...CORS,
+      'Content-Type': 'application/x-ndjson; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'X-Accel-Buffering': 'no',
+    },
+  });
 }
