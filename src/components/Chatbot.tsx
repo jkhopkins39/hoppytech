@@ -29,47 +29,30 @@ const Chatbot: React.FC = () => {
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 150);
   }, [isOpen]);
 
-  const systemContext = `You are the AI assistant on Jeremy Hopkins' portfolio. Be concise and friendly — 1-3 sentences for simple questions, more detail only if asked.
-
-Jeremy Hopkins: CS student at KSU (graduating May 2025, AI/ML focus). Previously UWG. Bremen High School alum (NHS, marching band).
-Skills: Python, JS/TS, Java, React, Node.js, TensorFlow, PyTorch, Tailwind, Git, PostgreSQL. Also video editing (corporate events, Southwire).
-Projects: Watch Trading Post (luxury marketplace), Landlock Solutions LLC (business site), SXNCTUARY (DNB artist), Mom and Pop's Pizza (Java).
-Hobbies: hip-hop (Kendrick, Outkast, The Roots), gym.
+  const systemContext = `You are the AI assistant on Jeremy Hopkins' portfolio. Be concise and friendly.
+CS student at KSU (graduating May 2025, AI/ML focus). Previously UWG. Bremen High School alum (NHS, marching band). Codes in Python,
+JS/TS, Java, React, Node.js, TensorFlow, PyTorch, Tailwind, Git, PostgreSQL. Also video editing (corporate events, Southwire).
+Projects: Watch Trading Post (luxury marketplace), Landlock Solutions LLC (business site), SXNCTUARY (DNB artist), Agentic AI Stack for E-Commerce (Capstone Project at KSU)
 Contact: jeremyyhopkins@gmail.com | github.com/jkhopkins39 | linkedin.com/in/jeremy-hopkins-160001275
-
 For anything not listed, suggest contacting Jeremy directly.`;
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      role: 'user',
-      content: inputValue,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
     const sentValue = inputValue;
     setInputValue('');
     setIsLoading(true);
+    setMessages((prev) => [...prev, { role: 'user', content: sentValue, timestamp: new Date() }]);
 
     try {
-      const apiUrl = import.meta.env.DEV
-        ? 'http://localhost:3001/api/chat'
-        : '/api/chat';
+      const apiUrl = import.meta.env.DEV ? 'http://localhost:3001/api/chat' : '/api/chat';
 
-      // Skip index 0 (initial greeting) — Gemini requires conversations to start
-      // with a user turn, so the assistant greeting must not be in the history.
-      const history = messages
-        .slice(1)
-        .map((m) => ({ role: m.role, content: m.content }));
+      // Skip index 0 (initial greeting) — Gemini requires conversations to start with a user turn.
+      const history = messages.slice(1).map((m) => ({ role: m.role, content: m.content }));
 
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/x-ndjson, application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [
             { role: 'system', content: systemContext },
@@ -79,122 +62,48 @@ For anything not listed, suggest contacting Jeremy directly.`;
         }),
       });
 
-      const ct = response.headers.get('content-type') || '';
-
-      if (!response.ok) {
-        const data = (await response.json().catch(() => ({}))) as { error?: unknown };
-        let errBody: string;
-        if (typeof data.error === 'string') {
-          errBody = data.error;
-        } else if (data.error && typeof data.error === 'object') {
-          const e = data.error as Record<string, unknown>;
-          errBody = typeof e.message === 'string'
-            ? e.message
-            : `Server error ${response.status}`;
-        } else {
-          errBody = `Server error ${response.status}`;
-        }
-        throw new Error(errBody);
+      if (!response.ok || !response.body) {
+        const data = await response.json().catch(() => ({})) as { error?: string };
+        throw new Error(data.error || `Server error ${response.status}`);
       }
 
-      if (ct.includes('ndjson') && response.body) {
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let acc = '';
+      setMessages((prev) => [...prev, { role: 'assistant', content: '', timestamp: new Date() }]);
 
-        setMessages((prev) => [
-          ...prev,
-          { role: 'assistant', content: '', timestamp: new Date() },
-        ]);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let acc = '';
 
-        const applyAcc = (text: string) => {
-          setMessages((prev) => {
-            const next = [...prev];
-            const last = next[next.length - 1];
-            if (last?.role === 'assistant') {
-              next[next.length - 1] = { ...last, content: text };
-            }
-            return next;
-          });
-        };
-
-        readLines: while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() ?? '';
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed) continue;
-            let obj: { t?: string; done?: boolean; error?: string };
-            try {
-              obj = JSON.parse(trimmed) as { t?: string; done?: boolean; error?: string };
-            } catch {
-              continue;
-            }
-            if (obj.error != null) {
-              const e = obj.error;
-              throw new Error(
-                typeof e === 'string' ? e
-                : (e && typeof e === 'object' && typeof (e as Record<string, unknown>).message === 'string')
-                  ? String((e as Record<string, unknown>).message)
-                  : JSON.stringify(e),
-              );
-            }
-            if (obj.t) {
-              acc += obj.t;
-              applyAcc(acc);
-            }
-            if (obj.done) break readLines;
-          }
-        }
-        if (buffer.trim()) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+        for (const line of lines) {
+          if (!line.trim()) continue;
           try {
-            const obj = JSON.parse(buffer.trim()) as { t?: string; error?: string; done?: boolean };
-            if (obj.error != null) {
-              const e = obj.error;
-              throw new Error(
-                typeof e === 'string' ? e
-                : (e && typeof e === 'object' && typeof (e as Record<string, unknown>).message === 'string')
-                  ? String((e as Record<string, unknown>).message)
-                  : JSON.stringify(e),
-              );
-            }
+            const obj = JSON.parse(line) as { t?: string; done?: boolean; error?: string };
+            if (obj.error) throw new Error(obj.error);
             if (obj.t) {
               acc += obj.t;
-              applyAcc(acc);
+              setMessages((prev) => {
+                const next = [...prev];
+                next[next.length - 1] = { ...next[next.length - 1], content: acc };
+                return next;
+              });
             }
           } catch (e) {
-            if (e instanceof SyntaxError) {
-              /* incomplete trailing line */
-            } else {
-              throw e;
-            }
+            if (e instanceof SyntaxError) continue;
+            throw e;
           }
         }
-        applyAcc(acc.replace(/\*+/g, '') || "I couldn't generate a reply. Try again.");
-      } else {
-        const data = (await response.json()) as { message?: string };
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: (data.message || '').replace(/\*+/g, ''),
-            timestamp: new Date(),
-          },
-        ]);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
       setMessages((prev) => [
         ...prev,
-        {
-          role: 'assistant',
-          content: `Something went wrong: ${msg}. Try again or email Jeremy directly.`,
-          timestamp: new Date(),
-        },
+        { role: 'assistant', content: `${msg} Try again or email Jeremy directly.`, timestamp: new Date() },
       ]);
     } finally {
       setIsLoading(false);
