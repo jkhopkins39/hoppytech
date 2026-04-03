@@ -1,32 +1,38 @@
-/**
- * Vercel Edge Runtime — starts in <1ms, no Node.js cold start.
- * Calls the Gemini REST API directly via fetch (no SDK import cost).
- * Transforms Gemini SSE → NDJSON so the frontend stays unchanged.
- */
-export const config = { runtime: 'edge' };
+import { GoogleGenAI } from '@google/genai';
 
 const MODEL = 'gemini-3-flash-preview';
-const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
-const MAX_OUTPUT_TOKENS = 512;
 const MAX_RETRIES = 3;
+const INITIAL_BACKOFF_MS = 400;
+const MAX_OUTPUT_TOKENS = 512;
+
+// Module-scope client — reused across warm invocations, avoids re-init cost.
+const apiKey =
+  process.env.GEMINI_API_KEY ||
+  process.env.GOOGLE_GEMINI_API_KEY ||
+  process.env.GOOGLE_API_KEY;
+
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+function parseGeminiError(err) {
+  const raw = err?.message != null ? String(err.message) : String(err);
+  let code = err?.status ?? err?.code ?? err?.error?.code;
+  let message = raw;
+  try {
+    const parsed = JSON.parse(raw);
+    const e = parsed?.error ?? parsed;
+    code = code ?? e?.code ?? e?.status;
+    message = e?.message ?? raw;
+  } catch {
+    /* keep message as raw */
+  }
+  return { code, message };
+}
 
-const jsonRes = (body, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json', ...CORS },
-  });
-
-function isOverloaded(status, errBody) {
-  if (status === 503 || status === 429) return true;
-  const m = (errBody?.error?.message || '').toLowerCase();
+function isRetryable(code, message) {
+  if (code === 503 || code === 429) return true;
+  const m = (message || '').toLowerCase();
   return (
     m.includes('unavailable') ||
     m.includes('high demand') ||
@@ -35,30 +41,48 @@ function isOverloaded(status, errBody) {
   );
 }
 
-export default async function handler(req) {
-  if (req.method === 'OPTIONS') return new Response(null, { status: 200, headers: CORS });
-  if (req.method !== 'POST') return jsonRes({ error: 'Method not allowed' }, 405);
+function chunkText(chunk) {
+  if (chunk?.text) return chunk.text;
+  const parts = chunk?.candidates?.[0]?.content?.parts;
+  if (!parts?.length) return '';
+  return parts.map((p) => p.text || '').join('');
+}
 
-  const apiKey =
-    process.env.GEMINI_API_KEY ||
-    process.env.GOOGLE_GEMINI_API_KEY ||
-    process.env.GOOGLE_API_KEY;
+async function streamGenerate(contents, systemInstruction, res) {
+  const config = { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.6 };
+  if (systemInstruction) config.systemInstruction = systemInstruction;
 
-  if (!apiKey) {
-    return jsonRes(
-      { error: 'GEMINI_API_KEY not set — add it in Vercel → Settings → Environment Variables.' },
-      500,
-    );
+  const stream = await ai.models.generateContentStream({ model: MODEL, contents, config });
+
+  res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.status(200);
+
+  for await (const chunk of stream) {
+    const t = chunkText(chunk);
+    if (t) res.write(`${JSON.stringify({ t })}\n`);
+  }
+  res.write(`${JSON.stringify({ done: true })}\n`);
+  res.end();
+}
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') { res.status(200).end(); return; }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  if (!ai) {
+    return res.status(500).json({
+      error: 'GEMINI_API_KEY not set — add it in Vercel → Settings → Environment Variables.',
+    });
   }
 
-  let messages;
-  try {
-    ({ messages } = await req.json());
-  } catch {
-    return jsonRes({ error: 'Invalid JSON body' }, 400);
-  }
-
-  if (!Array.isArray(messages)) return jsonRes({ error: 'messages must be an array' }, 400);
+  const { messages } = req.body ?? {};
+  if (!Array.isArray(messages)) return res.status(400).json({ error: 'messages must be an array' });
 
   const systemMessage = messages.find((m) => m.role === 'system');
   const conversationMessages = messages.filter((m) => m.role !== 'system');
@@ -68,99 +92,34 @@ export default async function handler(req) {
     parts: [{ text: String(m.content ?? '') }],
   }));
 
-  const reqBody = {
-    contents,
-    generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.6 },
-  };
-  if (systemMessage?.content) {
-    reqBody.systemInstruction = { parts: [{ text: String(systemMessage.content) }] };
-  }
-
-  const url = `${GEMINI_BASE}/models/${MODEL}:streamGenerateContent?key=${encodeURIComponent(apiKey)}&alt=sse`;
-
-  let geminiRes;
-  let lastErrBody = {};
+  const systemInstruction = systemMessage?.content
+    ? String(systemMessage.content)
+    : undefined;
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      geminiRes = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reqBody),
-      });
-    } catch (e) {
-      return jsonRes({ error: `Network error reaching Gemini: ${e.message}` }, 502);
-    }
-
-    if (geminiRes.ok) break;
-
-    lastErrBody = await geminiRes.json().catch(() => ({}));
-    if (attempt < MAX_RETRIES - 1 && isOverloaded(geminiRes.status, lastErrBody)) {
-      await sleep(350 * Math.pow(2, attempt)); // 350ms, 700ms
-      continue;
-    }
-    break;
-  }
-
-  if (!geminiRes.ok) {
-    const msg = lastErrBody?.error?.message || `Gemini API error ${geminiRes.status}`;
-    return jsonRes({ error: msg }, geminiRes.status);
-  }
-
-  // Transform Gemini SSE → NDJSON for the frontend
-  const { readable, writable } = new TransformStream();
-  const writer = writable.getWriter();
-  const encoder = new TextEncoder();
-
-  (async () => {
-    const reader = geminiRes.body.getReader();
-    const decoder = new TextDecoder();
-    let sseBuffer = '';
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        sseBuffer += decoder.decode(value, { stream: true });
-        const lines = sseBuffer.split('\n');
-        sseBuffer = lines.pop() ?? '';
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const data = line.slice(6).trim();
-          if (!data || data === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(data);
-            const text =
-              parsed?.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') ?? '';
-            if (text) {
-              await writer.write(encoder.encode(`${JSON.stringify({ t: text })}\n`));
-            }
-          } catch {
-            /* skip malformed SSE chunk */
-          }
-        }
+      await streamGenerate(contents, systemInstruction, res);
+      return;
+    } catch (err) {
+      const { code, message } = parseGeminiError(err);
+      if (attempt < MAX_RETRIES - 1 && isRetryable(code, message)) {
+        await sleep(INITIAL_BACKOFF_MS * Math.pow(2, attempt));
+        continue;
       }
-      await writer.write(encoder.encode(`${JSON.stringify({ done: true })}\n`));
-    } catch (e) {
+
+      console.error('Chat error:', err);
+      const status = code === 429 ? 429 : code === 503 ? 503 : code === 401 || code === 403 ? code : 500;
+
+      if (!res.headersSent) {
+        return res.status(status >= 400 && status < 600 ? status : 500).json({
+          error: message || 'Request failed',
+        });
+      }
       try {
-        await writer.write(encoder.encode(`${JSON.stringify({ error: e.message })}\n`));
-      } catch {
-        /* stream already closed */
-      }
-    } finally {
-      writer.releaseLock();
-      await writable.close().catch(() => {});
+        res.write(`${JSON.stringify({ error: message || 'Request failed' })}\n`);
+        res.end();
+      } catch { /* already closed */ }
+      return;
     }
-  })();
-
-  return new Response(readable, {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/x-ndjson; charset=utf-8',
-      'Cache-Control': 'no-cache, no-transform',
-      'X-Accel-Buffering': 'no',
-      ...CORS,
-    },
-  });
+  }
 }
