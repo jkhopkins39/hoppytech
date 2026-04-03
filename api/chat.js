@@ -1,6 +1,6 @@
 export const config = { runtime: 'edge' };
 
-const MODEL = 'gemini-2.0-flash';
+const MODEL = 'gemini-3-flash-preview';
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
 const CORS = {
