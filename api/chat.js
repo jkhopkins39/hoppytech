@@ -3,6 +3,8 @@ import { GoogleGenAI } from '@google/genai';
 export const config = { runtime: 'edge' };
 
 const MODEL = 'gemini-3-flash-preview';
+const MAX_RETRIES = 2;
+const RETRY_DELAY_MS = 300;
 
 const apiKey =
   process.env.GEMINI_API_KEY ||
@@ -22,6 +24,23 @@ function jsonResponse(body, status = 200) {
     status,
     headers: { ...CORS, 'Content-Type': 'application/json' },
   });
+}
+
+function isRetryable(err) {
+  const m = String(err?.message ?? err).toLowerCase();
+  return m.includes('503') || m.includes('429') || m.includes('unavailable')
+    || m.includes('overloaded') || m.includes('high demand') || m.includes('resource exhausted');
+}
+
+function friendlyError(err) {
+  const m = String(err?.message ?? err).toLowerCase();
+  if (m.includes('503') || m.includes('unavailable') || m.includes('high demand') || m.includes('overloaded'))
+    return 'The AI model is temporarily overloaded. Please try again in a moment.';
+  if (m.includes('429') || m.includes('resource exhausted'))
+    return 'Rate limit reached. Please wait a moment and try again.';
+  if (m.includes('401') || m.includes('403') || m.includes('api key'))
+    return 'API authentication error. Please contact Jeremy.';
+  return 'An unexpected error occurred. Please try again.';
 }
 
 export default async function handler(req) {
@@ -59,27 +78,40 @@ export default async function handler(req) {
   const enc = new TextEncoder();
 
   (async () => {
-    try {
-      const stream = await ai.models.generateContentStream({
-        model: MODEL,
-        contents,
-        config: genConfig,
-      });
+    let lastErr;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        if (attempt > 0) await new Promise((r) => setTimeout(r, RETRY_DELAY_MS * attempt));
 
-      for await (const chunk of stream) {
-        const text = chunk.text || '';
-        if (text) await writer.write(enc.encode(JSON.stringify({ t: text }) + '\n'));
+        const stream = await ai.models.generateContentStream({
+          model: MODEL,
+          contents,
+          config: genConfig,
+        });
+
+        for await (const chunk of stream) {
+          const text = chunk.text || '';
+          if (text) await writer.write(enc.encode(JSON.stringify({ t: text }) + '\n'));
+        }
+        await writer.write(enc.encode(JSON.stringify({ done: true }) + '\n'));
+        lastErr = null;
+        break;
+      } catch (err) {
+        lastErr = err;
+        if (attempt < MAX_RETRIES && isRetryable(err)) continue;
+        break;
       }
-      await writer.write(enc.encode(JSON.stringify({ done: true }) + '\n'));
-    } catch (err) {
+    }
+
+    if (lastErr) {
       try {
         await writer.write(
-          enc.encode(JSON.stringify({ error: String(err.message || err) }) + '\n'),
+          enc.encode(JSON.stringify({ error: friendlyError(lastErr) }) + '\n'),
         );
       } catch { /* writer already closed */ }
-    } finally {
-      try { await writer.close(); } catch { /* already closed */ }
     }
+
+    try { await writer.close(); } catch { /* already closed */ }
   })();
 
   return new Response(readable, {
